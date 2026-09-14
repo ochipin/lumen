@@ -1,0 +1,15 @@
+{{- if .Entries -}}
+  {{- $label := partial "i18n.html" (dict "Page" .Page "Key" "lumen_toc") -}}
+  <aside class="article-toc" data-article-toc data-pagefind-ignore>
+    <details class="toc-disclosure" open>
+      <summary class="toc-summary">{{ $label }}</summary>
+      <nav class="toc-nav" aria-label="{{ $label }}">
+        <ol class="toc-list">
+          {{- range .Entries }}
+            <li class="toc-item" data-level="{{ .level }}"><a class="toc-link" href="#{{ .id }}"><span class="toc-text">{{ .text }}</span></a></li>
+          {{- end }}
+        </ol>
+      </nav>
+    </details>
+  </aside>
+{{- end -}}

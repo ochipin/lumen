@@ -1,0 +1,3 @@
+{{- $ratio := .Ratio | default "equal" -}}
+{{- $align := .Align | default "center" -}}
+<div class="content-columns content-columns--{{ $ratio }} content-columns--{{ $align }}{{ with .Class }} {{ . }}{{ end }}">{{ .HTML }}</div>

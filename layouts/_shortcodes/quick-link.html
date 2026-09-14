@@ -1,0 +1,24 @@
+{{- if not .Parent -}}
+  {{- errorf "quick-link must be placed directly inside quick-links (%s)" .Position -}}
+{{- else if ne .Parent.Name "quick-links" -}}
+  {{- errorf "quick-link must be placed directly inside quick-links (%s)" .Position -}}
+{{- end -}}
+{{- $title := .Get "title" -}}
+{{- $url := .Get "url" -}}
+{{- $description := strings.TrimSpace .InnerDeindent -}}
+{{- with .Get "page" -}}
+  {{- if $url -}}
+    {{- errorf "quick-link accepts either page or url, not both (%s)" $.Position -}}
+  {{- end -}}
+  {{- with $.Page.GetPage . -}}
+    {{- $url = .RelPermalink -}}
+    {{- $title = $title | default .LinkTitle -}}
+    {{- $description = $description | default .Description -}}
+  {{- else -}}
+    {{- errorf "quick-link cannot find page %q (%s)" . $.Position -}}
+  {{- end -}}
+{{- end -}}
+{{- if or (not $url) (not $title) -}}
+  {{- errorf "quick-link requires a page reference, or a url and title (%s)" .Position -}}
+{{- end -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" (partial "blocks/quick-link.html" (dict "url" $url "title" $title "icon" (.Get "icon" | default "arrow") "body" (partial "blocks/markdown.html" (dict "Shortcode" . "Text" $description))))) -}}

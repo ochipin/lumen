@@ -1,0 +1,11 @@
+{{- /* Local alias: unlike Hugo's embedded shortcode, playback starts on click. */ -}}
+{{- $video := dict "Page" .Page -}}
+{{- if .IsNamedParams -}}
+  {{- $video = merge $video (dict "ID" (.Get "id") "Thumbnail" (.Get "thumbnail") "Title" (.Get "title") "Caption" (.Get "caption") "Alt" (.Get "alt") "PlayLabel" (.Get "playLabel")) -}}
+{{- else -}}
+  {{- $video = merge $video (dict "ID" (.Get 0)) -}}
+{{- end -}}
+{{- if not (findRE `^[A-Za-z0-9_-]{11}$` $video.ID) -}}
+  {{- errorf "youtube requires an 11-character video id (%s)" .Position -}}
+{{- end -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" (partial "blocks/video.html" $video)) -}}

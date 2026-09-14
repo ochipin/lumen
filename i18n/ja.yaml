@@ -1,0 +1,177 @@
+# Lumen interface translations. Override these keys in your site i18n directory.
+lumen_home:
+  other: "ホーム"
+lumen_breadcrumbs:
+  other: "現在位置"
+lumen_main_navigation:
+  other: "メインメニュー"
+lumen_search_site:
+  other: "サイト内検索"
+lumen_menu:
+  other: "メニュー"
+lumen_toggle_menu:
+  other: "{{ .Title }}のメニューを開閉"
+lumen_language:
+  other: "言語"
+lumen_site_policies:
+  other: "サイトの方針"
+lumen_skip_content:
+  other: "本文へ移動"
+lumen_table_scroll:
+  other: "表。幅が足りない場合は横にスクロールできます"
+lumen_empty_articles:
+  other: "現在、掲載している記事はありません。"
+lumen_read_more:
+  other: "詳しい資料を読む"
+lumen_toc:
+  other: "このページの内容"
+lumen_not_found:
+  other: "ページが見つかりませんでした"
+lumen_not_found_description:
+  other: "ページが移動したか、URLが変更された可能性があります。ホームから目的の情報をお探しください。"
+lumen_back_home:
+  other: "ホームへ戻る"
+lumen_info:
+  other: "情報"
+lumen_notice:
+  other: "注意"
+lumen_important:
+  other: "重要"
+lumen_tips:
+  other: "ヒント"
+lumen_note:
+  other: "補足"
+lumen_video:
+  other: "YouTube動画"
+lumen_play_video:
+  other: "{{ .Title }}を再生"
+lumen_watch_youtube:
+  other: "YouTubeで見る"
+lumen_video_fallback:
+  other: "動画は「YouTubeで見る」からご覧ください。"
+lumen_highlights:
+  other: "主な数値"
+lumen_explore:
+  other: "目的から探す"
+lumen_news:
+  other: "お知らせ"
+lumen_view_news:
+  other: "すべて見る"
+lumen_research:
+  other: "研究成果"
+lumen_view_research:
+  other: "研究成果をすべて見る"
+lumen_process:
+  other: "取り組みの進め方"
+lumen_learn_more:
+  other: "詳しく見る"
+lumen_source:
+  other: "出典"
+lumen_code:
+  other: "コード"
+lumen_copy:
+  other: "コピー"
+lumen_copy_title:
+  other: "{{ .Title }}をコピー"
+lumen_code_scroll:
+  other: "{{ .Title }}。左右にスクロールしてコードを読めます。"
+lumen_copied:
+  other: "コピー済み"
+lumen_copy_success:
+  other: "コードをクリップボードにコピーしました。"
+lumen_copy_select:
+  other: "選択してコピー"
+lumen_copy_failed:
+  other: "コピーできませんでした。コードを選択して手動でコピーするか、コピーボタンを押して再試行してください。"
+lumen_find_news:
+  other: "お知らせを探す"
+lumen_search_news:
+  other: "お知らせの絞り込み"
+lumen_keywords:
+  other: "キーワード"
+lumen_news_placeholder:
+  other: "タイトル・本文のキーワード"
+lumen_category:
+  other: "カテゴリ"
+lumen_all_categories:
+  other: "すべてのカテゴリ"
+lumen_category_count:
+  other: "{{ .Label }}（{{ .Count }}）"
+lumen_news_hint:
+  other: "過去のお知らせを含む全{{ .Count }}件から探せます。"
+lumen_clear_filters:
+  other: "条件をクリア"
+lumen_news_noscript:
+  other: "下のページ番号から過去のお知らせも読めます。JavaScriptを有効にすると、全{{ .Count }}件を検索・絞り込みできます。"
+lumen_news_loading:
+  other: "全件からお知らせを探しています…"
+lumen_news_error:
+  other: "検索用データを読み込めませんでした。もう一度試すか、条件をクリアしてページ番号からお探しください。"
+lumen_news_list:
+  other: "お知らせ一覧"
+lumen_articles_suffix:
+  other: " 件"
+lumen_news_empty:
+  other: "一致するお知らせが見つかりませんでした"
+lumen_news_empty_hint:
+  other: "キーワードを短くするか、カテゴリを変更してください。"
+lumen_clear_all:
+  other: "条件をクリアしてすべて表示"
+lumen_news_pages:
+  other: "お知らせ一覧のページ切り替え"
+lumen_previous_page:
+  other: "前のページ"
+lumen_next_page:
+  other: "次のページ"
+lumen_page_number:
+  other: "{page}ページ目"
+lumen_news_count:
+  other: " 件 ／ 全 {total} 件（{range} 件表示）"
+lumen_search_placeholder:
+  other: "タイトル・本文のキーワード"
+lumen_search_keywords:
+  other: "キーワードから探す"
+lumen_search:
+  other: "検索"
+lumen_search_hint:
+  other: "すべてのカテゴリのページを、タイトルと本文から検索します。"
+lumen_clear:
+  other: "クリア"
+lumen_search_noscript:
+  other: "検索を利用するにはJavaScriptを有効にしてください。下のリンクからも各ページをご覧いただけます。"
+lumen_search_idle:
+  other: "調べたい言葉を入力してください。"
+lumen_search_error:
+  other: "検索を読み込めませんでした。もう一度試すか、下のリンクからお探しください。"
+lumen_retry:
+  other: "もう一度試す"
+lumen_search_results:
+  other: "検索結果"
+lumen_show_more:
+  other: "さらに表示"
+lumen_browse:
+  other: "カテゴリから探す"
+lumen_search_composing:
+  other: "文字の入力を確定すると検索します。"
+lumen_search_loading:
+  other: "検索しています…"
+lumen_search_more:
+  other: "続きを読み込んでいます…"
+lumen_search_zero:
+  other: "「{query}」に一致するページは見つかりませんでした。別のキーワードで検索してください。"
+lumen_search_count:
+  other: "「{query}」の検索結果：{total}件（{shown}件を表示）"
+lumen_untitled:
+  other: "タイトルのないページ"
+lumen_current_language:
+  other: "現在の言語"
+lumen_language_home:
+  other: "この言語のホームへ"
+lumen_language_only:
+  other: "現在、この言語のみ公開しています。"
+
+# Native language names for sites that omit languages.<code>.label.
+lumen_language_name_ja:
+  other: "日本語"
+lumen_language_name_en:
+  other: "English"

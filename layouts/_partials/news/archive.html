@@ -1,0 +1,80 @@
+{{- $page := .Page -}}
+{{- $pager := .Pager -}}
+{{- $language := partial "page-language.html" $page -}}
+{{- $section := $page.Params.newsSection | default $page.Site.Params.newsSection | default "news" -}}
+{{- $model := partialCached "news/model.html" $page $language $section $page.Path $page.Site.BaseURL -}}
+{{- $total := $model.total -}}
+{{- $pageURLs := slice -}}
+{{- range $pager.Pagers }}{{ $pageURLs = $pageURLs | append .URL }}{{ end -}}
+{{- $start := 0 -}}
+{{- if $total }}{{ $start = add (mul (sub $pager.PageNumber 1) $pager.PagerSize) 1 }}{{ end -}}
+{{- $end := add (mul (sub $pager.PageNumber 1) $pager.PagerSize) $pager.NumberOfElements -}}
+{{- $range := printf "%d–%d" $start $end -}}
+{{- if not $total }}{{ $range = "0" }}{{ end -}}
+{{ partial "page-header.html" (dict "Page" $page) }}
+<div class="page-shell container news-index" lang="{{ $language }}">
+  {{ with $page.Content }}<div class="prose section-intro">{{ . }}</div>{{ end }}
+  <section id="news-filter-controls" class="news-filters" aria-labelledby="news-filters-title" data-pagefind-ignore hidden>
+    <h2 id="news-filters-title">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_find_news") }}</h2>
+    <form id="news-filters" role="search" aria-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_search_news") }}"
+      data-language="{{ $language }}" data-index-url="{{ $model.indexURL }}" data-base-url="{{ $page.RelPermalink }}"
+      data-current-page="{{ $pager.PageNumber }}" data-total-pages="{{ $pager.TotalPages }}" data-total-count="{{ $total }}"
+      {{ printf `data-page-urls="%s"` ($pageURLs | jsonify | htmlEscape) | safeHTMLAttr }}
+      data-previous-page="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_previous_page") }}" data-next-page="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_next_page") }}"
+      data-page-number="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_page_number") }}" data-count-message="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_count") }}"
+      data-loading-message="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_loading") }}" data-error-message="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_error") }}" data-retry-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_retry") }}">
+      <div class="news-filter-grid">
+        <div class="news-field">
+          <label for="news-keyword">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_keywords") }}</label>
+          <div class="news-search-field">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5.8" stroke="currentColor" stroke-width="1.5"/><path d="m12.4 12.4 5 5" stroke="currentColor" stroke-width="1.5"/></svg>
+            <input id="news-keyword" type="search" name="q" placeholder="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_placeholder") }}" aria-describedby="news-filter-hint" autocomplete="off">
+          </div>
+        </div>
+        <div class="news-field">
+          <label for="news-category">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_category") }}</label>
+          <select id="news-category" name="category">
+            <option value="">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_all_categories") }}</option>
+            {{ range $label, $count := $model.categories }}<option value="{{ $label }}">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_category_count" "Data" (dict "Label" $label "Count" $count)) }}</option>{{ end }}
+          </select>
+        </div>
+      </div>
+      <div class="news-filter-bottom">
+        <p id="news-filter-hint">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_hint" "Data" (dict "Count" $total)) }}</p>
+        <button type="button" class="news-reset" data-news-reset>{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_clear_filters") }}</button>
+      </div>
+    </form>
+    <p id="news-search-status" class="news-search-status" role="status" aria-live="polite" hidden></p>
+    <button id="news-search-retry" type="button" class="news-reset" data-news-retry hidden>{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_retry") }}</button>
+  </section>
+  <noscript><p class="news-no-script">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_noscript" "Data" (dict "Count" $total)) }}</p></noscript>
+
+  <section aria-labelledby="news-results-heading">
+    <div class="news-results-heading">
+      <h2 id="news-results-heading" tabindex="-1">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_list") }}</h2>
+      <p id="news-results-count" role="status" aria-live="polite" aria-atomic="true" data-pagefind-ignore><strong>{{ $total }}</strong>{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_count") | replaceRE `\{total\}` (string $total) | replaceRE `\{range\}` $range }}</p>
+    </div>
+    <ul id="news-list" class="news-index-list" data-page-size="{{ $pager.PagerSize }}"{{ if not $total }} hidden{{ end }}>
+      {{ range $pager.Pages }}
+        {{ $entry := . }}
+        {{ $category := partial "news/category.html" $entry }}
+        {{ $date := "" }}{{ if not $entry.Date.IsZero }}{{ $date = $entry.Date.Format "2006.01.02" }}{{ end }}
+        <li class="news-item" data-category="{{ $category.label }}">
+          <a class="news-item-link" href="{{ $entry.RelPermalink }}">
+            {{ if $date }}<time datetime="{{ $entry.Date.Format "2006-01-02" }}">{{ $date }}</time>{{ else }}<span class="news-undated"></span>{{ end }}
+            <span class="news-category" data-category="{{ $category.style }}">{{ $category.label }}</span>
+            <h3>{{ $entry.Title }}</h3>
+            <span class="news-item-arrow" aria-hidden="true">→</span>
+          </a>
+        </li>
+      {{ end }}
+    </ul>
+    <div id="news-empty-state" class="news-empty-state" data-pagefind-ignore{{ if $total }} hidden{{ end }}>
+      <h3>{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_empty") }}</h3>
+      <p>{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_empty_hint") }}</p>
+      <button type="button" class="news-reset" data-news-reset>{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_clear_all") }}</button>
+    </div>
+    {{ partial "news/pagination.html" (dict "Page" $page "Pager" $pager) }}
+    <nav id="news-filter-pagination" aria-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_pages") }}" data-pagefind-ignore hidden></nav>
+  </section>
+</div>

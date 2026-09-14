@@ -1,0 +1,6 @@
+{{- /* Ordinal is relative to the parent, so include the entire shortcode path. */ -}}
+{{- $id := printf "block-%s-%d" .Name .Ordinal -}}
+{{- with .Parent -}}
+  {{- $id = printf "%s-%s-%d" (partial "blocks/id.html" .) $.Name $.Ordinal -}}
+{{- end -}}
+{{- return $id -}}

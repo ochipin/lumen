@@ -1,0 +1,1 @@
+<section class="metrics-strip" aria-label="{{ .Label | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_highlights")) }}"><dl class="container metrics-grid">{{ range .Items }}<div><dt>{{ .label }}</dt><dd class="metric-value">{{ .value }} <span>{{ .unit }}</span></dd><dd class="metric-detail">{{ .detail }}</dd></div>{{ end }}</dl></section>

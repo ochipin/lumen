@@ -1,0 +1,13 @@
+{{- $videoID := .Get "youtube" -}}
+{{- if not (findRE `^[A-Za-z0-9_-]{11}$` $videoID) -}}
+  {{- errorf "video-intro requires an 11-character youtube id (%s)" .Position -}}
+{{- end -}}
+{{- $title := .Get "title" -}}
+{{- if not $title }}{{ errorf "video-intro requires a title (%s)" .Position }}{{ end -}}
+{{- $link := .Get "link" -}}
+{{- $linkLabel := .Get "linkLabel" -}}
+{{- if and $link (not $linkLabel) }}{{ errorf "video-intro requires linkLabel when link is set (%s)" .Position }}{{ end -}}
+{{- $reverse := eq (printf "%v" (.Get "reverse")) "true" -}}
+{{- $video := dict "Page" .Page "ID" $videoID "Thumbnail" (.Get "thumbnail") "Title" ((.Get "videoTitle") | default $title) "Caption" (.Get "caption") "Alt" (.Get "alt") "PlayLabel" (.Get "playLabel") -}}
+{{- $html := partial "blocks/video-intro.html" (dict "ID" (partial "blocks/id.html" .) "Video" $video "Title" $title "Eyebrow" (.Get "eyebrow") "Link" $link "LinkLabel" $linkLabel "Reverse" $reverse "HTML" (partial "blocks/markdown.html" (dict "Shortcode" . "Text" .InnerDeindent))) -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" $html) -}}

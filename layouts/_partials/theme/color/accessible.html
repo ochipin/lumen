@@ -1,0 +1,26 @@
+{{- /* Move toward a known safe endpoint in 1% steps. Test final rounded RGB,
+  without rounding the contrast ratio, against every relevant surface.
+  https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html */ -}}
+{{- $original := .Color -}}
+{{- $toward := .Toward -}}
+{{- $backgrounds := .Backgrounds -}}
+{{- $target := .Target | default 4.5 -}}
+{{- $chosen := $original -}}
+{{- $found := false -}}
+{{- range seq 0 100 -}}
+  {{- if not $found -}}
+    {{- $candidate := partial "theme/color/mix.html" (dict "From" $original "To" $toward "Amount" (div (float .) 100.0)) -}}
+    {{- $minimum := 21.0 -}}
+    {{- range $backgrounds -}}
+      {{- $minimum = math.Min $minimum (partial "theme/color/contrast.html" (dict "A" $candidate "B" .)) -}}
+    {{- end -}}
+    {{- if ge $minimum $target -}}
+      {{- $chosen = $candidate -}}
+      {{- $found = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $found -}}
+  {{- errorf "Could not derive a BaseColor palette colour with contrast %.2f" $target -}}
+{{- end -}}
+{{- return $chosen -}}

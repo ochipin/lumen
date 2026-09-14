@@ -1,0 +1,19 @@
+{{- $headingID := printf "%s-title" .ID -}}
+{{- $video := partial "blocks/video.html" .Video -}}
+{{- $copy := printf `<div class="content-column overview-copy">` | safeHTML -}}
+{{- with .Eyebrow }}{{ $copy = printf `%s<p class="eyebrow">%s</p>` $copy (htmlEscape .) | safeHTML }}{{ end -}}
+{{- $copy = printf `%s<h2 id="%s">%s</h2><div class="block-copy">%s</div>` $copy $headingID (htmlEscape .Title) .HTML | safeHTML -}}
+{{- with .Link -}}
+  {{- $button := partial "blocks/link.html" (dict "URL" . "Label" $.LinkLabel) -}}
+  {{- $copy = printf "%s%s" $copy $button | safeHTML -}}
+{{- end -}}
+{{- $copy = printf "%s</div>" $copy | safeHTML -}}
+{{- $columns := printf `<div class="content-column">%s</div>%s` $video $copy | safeHTML -}}
+{{- $ratio := "wide-left" -}}
+{{- if .Reverse -}}
+  {{- $columns = printf `%s<div class="content-column">%s</div>` $copy $video | safeHTML -}}
+  {{- $ratio = "wide-right" -}}
+{{- end -}}
+<section class="container block-video-intro" aria-labelledby="{{ $headingID }}">
+  {{- partial "blocks/columns.html" (dict "Ratio" $ratio "Align" "center" "Class" "overview-section" "HTML" $columns) -}}
+</section>

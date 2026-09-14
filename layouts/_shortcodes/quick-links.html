@@ -1,0 +1,2 @@
+{{- $label := .Get "label" | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_explore")) -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" (partial "blocks/quick-links.html" (dict "label" $label "body" (.Inner | safeHTML)))) -}}

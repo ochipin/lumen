@@ -1,0 +1,61 @@
+/* Both the free-form columns and video-intro use this grid. Source order is
+   preserved at every width, including a reversed video-intro. */
+.content-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 54px; }
+.content-columns--wide-left { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.content-columns--wide-right { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+.content-columns--center { align-items: center; }
+.content-columns--start { align-items: start; }
+.content-column { min-width: 0; overflow-wrap: anywhere; }
+.block-columns { margin-block: 48px; }
+.block-copy { font-size: 14px; line-height: 1.95; color: var(--muted); }
+.block-copy h2, .block-copy h3, .block-copy h4 { color: var(--ink); }
+.block-copy h2 { font-size: 26px; }
+.block-copy h3 { font-size: 20px; }
+.block-copy > * + * { margin-top: 1em; }
+.block-copy ul, .block-copy ol { padding-left: 1.5em; }
+.block-copy blockquote { padding-left: 1em; border-left: 2px solid var(--line); }
+.block-copy pre { max-width: 100%; overflow-x: auto; padding: 1em; }
+.block-copy a:not(.button):not(.video-external) { text-decoration: underline; }
+.block-copy > :first-child { margin-top: 0; }
+.block-copy > :last-child { margin-bottom: 0; }
+.overview-copy > .block-copy { margin-top: 19px; }
+.explainer-copy > .block-markdown { margin-top: 17px; }
+.explainer-copy > .block-markdown > p { font-size: 14px; line-height: 1.95; color: var(--muted); }
+.video-placeholder { display: grid; place-items: center; width: 100%; height: 100%; background: linear-gradient(135deg, var(--banner-start), var(--banner-end)); color: var(--on-banner); font-size: 18px; padding-bottom: 110px; }
+.video-caption { right: 20px; text-align: left; }
+.prose .block-columns, .prose .block-video-intro,
+.content-column .block-columns, .content-column .block-video-intro { width: 100%; margin-inline: 0; }
+.content-column .block-columns { margin-block: 0; }
+.prose .content-column > h2:first-child { margin-top: 0; }
+.prose .overview-copy h2 { margin-block: 12px 0; padding: 0; border: 0; }
+.prose .overview-copy .eyebrow { margin-bottom: 0; }
+.prose .block-copy p:last-child { margin-bottom: 0; }
+.content-column .overview-section, .prose .overview-section { padding-top: 0; }
+
+/* Static callouts: the text label conveys the meaning as well as the colour. */
+.callout { --callout-accent: #386bff; --callout-ink: #174eca; --callout-tint: #f0f5ff; --callout-border: #c2d2fa; margin-block: 24px; padding: 16px 18px; border: 1px solid var(--line); border-left: 3px solid var(--callout-accent); border-radius: 6px; background: #f8f9fb; color: var(--ink); overflow-wrap: anywhere; }
+.callout--notice { --callout-accent: #e5b526; --callout-ink: #805b09; --callout-tint: #fffbed; --callout-border: #ecd79c; }
+.callout--important { --callout-accent: #d03945; --callout-ink: #a92835; --callout-tint: #fff3f4; --callout-border: #edc1c7; }
+.callout--tips { --callout-accent: #278653; --callout-ink: #1c6d3a; --callout-tint: #f1faf4; --callout-border: #bbddc7; }
+.callout--note { --callout-accent: #778291; --callout-ink: #536071; --callout-tint: #f2f4f7; --callout-border: #d1d7df; }
+.callout > .callout-label { display: block; width: fit-content; max-width: 100%; margin: 0; padding: 1px 7px; border: 1px solid var(--callout-border); border-radius: 3px; color: var(--callout-ink); background: var(--callout-tint); font-size: 11px; font-weight: 700; line-height: 1.4; }
+.callout > .callout-body { margin-top: 10px; font-size: 14px; line-height: 1.85; }
+.callout .callout-body p { margin-block: 0; }
+.callout .callout-body > * + * { margin-top: .9em; }
+.callout .callout-body ul, .callout .callout-body ol { margin-block: .9em; padding-inline-start: 1.5em; }
+.callout .callout-body h2, .callout .callout-body h3, .callout .callout-body h4 { margin-block: 1em .6em; padding: 0; border: 0; font-size: 18px; }
+.callout .callout-body pre { max-width: 100%; overflow-x: auto; padding: 12px; font-size: 12px; }
+.callout .callout-body a { text-decoration: underline; }
+.callout .callout-body > :first-child { margin-top: 0; }
+.callout .callout-body > :last-child { margin-bottom: 0; }
+@media (max-width: 760px) {
+  .callout { padding: 15px; }
+}
+@media (max-width: 1250px) {
+  .content-columns { gap: 40px; }
+}
+@media (max-width: 760px) {
+  .content-columns { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .block-columns { margin-block: 37px; }
+  .block-copy h2 { font-size: 25px; }
+}

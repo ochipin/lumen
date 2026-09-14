@@ -1,0 +1,3 @@
+{{- $first := partial "theme/color/luminance.html" .A -}}
+{{- $second := partial "theme/color/luminance.html" .B -}}
+{{- return (div (add (math.Max $first $second) 0.05) (add (math.Min $first $second) 0.05)) -}}

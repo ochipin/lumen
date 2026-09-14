@@ -1,0 +1,11 @@
+{{ define "main" }}
+  {{ with .Params.hero }}
+    {{ partial "blocks/hero.html" (dict "Page" $ "Hero" .) }}
+  {{ else }}
+    {{ partial "page-header.html" (dict "Page" .) }}
+  {{ end }}
+  {{ with .Params.metrics }}
+    {{ partial "blocks/metrics.html" (dict "Page" $ "Items" . "Label" $.Params.metricsLabel) }}
+  {{ end }}
+  <div class="home-content">{{ .Content }}</div>
+{{ end }}

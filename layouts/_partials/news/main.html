@@ -1,0 +1,6 @@
+  {{ $pager := partial "news/paginator.html" . }}
+  {{ partial "news/archive.html" (dict "Page" . "Pager" $pager) }}
+  {{ with resources.Get "js/news.js" }}
+    {{ $script := . | minify | fingerprint }}
+    <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}" defer></script>
+  {{ end }}

@@ -1,0 +1,112 @@
+{{- /* The content tree owns main navigation. Cache only the language-specific
+  model; current-page state belongs in navigation/current.html and the renderer. */ -}}
+{{- $language := .Language -}}
+{{- $state := newScratch -}}
+{{- $state.Set "entries" dict -}}
+{{- $state.Set "explicit" dict -}}
+{{- $state.Set "footer" dict -}}
+{{- $state.Set "groups" dict -}}
+{{- $state.Set "children" dict -}}
+{{- $state.Set "panels" dict -}}
+{{- $homeNavigation := site.Home.Params.navigation | default dict -}}
+
+{{- range $homeNavigation.footergroups -}}
+  {{- $id := string (.id | default "") -}}
+  {{- if or (not $id) (isset ($state.Get "groups") $id) -}}
+    {{- errorf "navigation.footerGroups: group id %q is empty or duplicated in content/_index.md" $id -}}
+  {{- end -}}
+  {{- $name := .name | default $id -}}
+  {{- $state.SetInMap "groups" $id (dict "id" $id "name" $name "weight" (.weight | default 0)) -}}
+{{- end -}}
+
+{{- /* Collect explicit roots and footer entries in the one site-wide pass. An
+  excluded or collapsed ancestor must also block descendants from becoming roots. */ -}}
+{{- range site.Pages -}}
+  {{- $page := . -}}
+  {{- $settings := partial "navigation/settings.html" $page -}}
+  {{- if $settings.registered -}}
+    {{- $state.SetInMap "explicit" $page.Path (dict "page" $page "settings" $settings) -}}
+  {{- end -}}
+  {{- if eq (partial "page-language.html" $page) $language -}}
+    {{- $navigation := $page.Params.navigation | default dict -}}
+    {{- range $group, $settings := $navigation.footer -}}
+      {{- if and (ne $group "legal") (not (isset ($state.Get "groups") $group)) -}}
+        {{- errorf "navigation.footer on %s refers to unknown group %q; define it in content/_index.md navigation.footerGroups" $page.Path $group -}}
+      {{- end -}}
+      {{- if not (reflect.IsMap $settings) -}}
+        {{- errorf "navigation.footer.%s on %s must be a map" $group $page.Path -}}
+      {{- else -}}
+        {{- $weight := $page.Weight -}}
+        {{- if isset $settings "weight" }}{{ $weight = int $settings.weight }}{{ end -}}
+        {{- $entry := dict "name" ($settings.name | default $page.LinkTitle) "weight" $weight "url" $page.RelPermalink -}}
+        {{- $entries := index ($state.Get "footer") $group | default slice -}}
+        {{- $state.SetInMap "footer" $group ($entries | append $entry) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- range $state.Get "explicit" -}}
+  {{- $page := .page -}}
+  {{- if and .settings.enabled (eq (partial "page-language.html" $page) $language) -}}
+    {{- $root := true -}}
+    {{- range $page.Ancestors -}}
+      {{- if isset ($state.Get "explicit") .Path -}}
+        {{- $root = false -}}
+        {{- break -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $root -}}
+      {{- partial "navigation/collect.html" (dict "Page" $page "State" $state "Language" $language "Parent" "") -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- range $parent, $entries := $state.Get "children" -}}
+  {{- $state.SetInMap "children" $parent (sort (sort $entries "name") "weight") -}}
+{{- end -}}
+
+{{- /* Immediate child sections form categories. Loose pages remain visible in
+  the root's default category, while deeper sections retain their nested links. */ -}}
+{{- range index ($state.Get "children") "" -}}
+  {{- $entry := . -}}
+  {{- with index ($state.Get "children") $entry.id -}}
+    {{- $categories := slice -}}
+    {{- $loosePages := slice -}}
+    {{- range . -}}
+      {{- if .page.IsSection -}}
+        {{- $links := index ($state.Get "children") .id | default slice -}}
+        {{- $categories = $categories | append (dict "id" .id "name" .name "icon" .icon "description" .description "weight" .weight "url" .url "page" .page "entries" $links) -}}
+      {{- else -}}
+        {{- $loosePages = $loosePages | append . -}}
+      {{- end -}}
+    {{- end -}}
+    {{- with $loosePages -}}
+      {{- $categories = $categories | append (dict "id" $entry.id "name" $entry.name "icon" $entry.icon "weight" (index . 0).weight "entries" .) -}}
+    {{- end -}}
+    {{- $panelID := printf "navigation-%s" (substr (crypto.SHA256 (printf "%s:%s" $language $entry.id)) 0 12) -}}
+    {{- $state.SetInMap "panels" $entry.id (dict "id" $panelID "groups" (sort (sort $categories "name") "weight")) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- range $homeNavigation.externallinks -}}
+  {{- if eq (.language | default site.Language.Lang) $language -}}
+    {{- $group := .group | default "links" -}}
+    {{- if and (ne $group "legal") (not (isset ($state.Get "groups") $group)) -}}
+      {{- errorf "navigation.externalLinks: %q refers to unknown footer group %q" .name $group -}}
+    {{- end -}}
+    {{- if or (not .name) (not .url) -}}
+      {{- errorf "navigation.externalLinks requires both name and url in content/_index.md" -}}
+    {{- end -}}
+    {{- $entry := dict "name" .name "url" (partialCached "site-url.html" .url .url site.BaseURL) "weight" (.weight | default 0) -}}
+    {{- $entries := index ($state.Get "footer") $group | default slice -}}
+    {{- $state.SetInMap "footer" $group ($entries | append $entry) -}}
+  {{- end -}}
+{{- end -}}
+{{- range $group, $entries := $state.Get "footer" -}}
+  {{- $state.SetInMap "footer" $group (sort (sort $entries "name") "weight") -}}
+{{- end -}}
+{{- $groups := slice -}}
+{{- range $state.Get "groups" -}}
+  {{- if ne .id "legal" }}{{ $groups = $groups | append . }}{{ end -}}
+{{- end -}}
+{{- return (dict "entries" ($state.Get "entries") "children" ($state.Get "children") "panels" ($state.Get "panels") "groups" (sort (sort $groups "name") "weight") "footer" ($state.Get "footer")) -}}

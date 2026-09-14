@@ -1,0 +1,15 @@
+{{- /*
+  A Markdown column must not send nested, already-rendered shortcode HTML back
+  through Goldmark. Protect only HTML produced by a theme shortcode; ordinary
+  raw HTML in Markdown still follows Hugo's default safe renderer settings.
+*/ -}}
+{{- $html := .HTML -}}
+{{- $shortcode := .Shortcode -}}
+{{- with $shortcode.Parent -}}
+  {{- if in (slice "column" "video-intro" "media-intro" "research-cards" "quick-link" "process" "process-step" "info" "notice" "important" "tips" "note") .Name -}}
+    {{- $token := printf "LUMENBLOCK%sEND" (crypto.SHA256 (partial "blocks/id.html" $shortcode)) -}}
+    {{- .Store.SetInMap "blockHTML" $token $html -}}
+    {{- $html = printf "\n\n%s\n\n" $token -}}
+  {{- end -}}
+{{- end -}}
+{{- return ($html | safeHTML) -}}

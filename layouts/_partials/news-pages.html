@@ -1,0 +1,21 @@
+{{- /* A news list belongs to its content subtree. The home shortcode uses the
+  configured newsSection. Do not mix unrelated sections just because their
+  articles share a content type. Walking published regular pages also includes
+  articles below grouping sections with build.list = never. */ -}}
+{{- $language := partial "page-language.html" . -}}
+{{- $section := .Params.newsSection | default .Site.Params.newsSection | default "news" -}}
+{{- $source := .Site.GetPage $section -}}
+{{- if and .IsSection (eq .Type "news") (not (isset .Params "newssection")) -}}
+  {{- $source = . -}}
+{{- end -}}
+{{- $urls := slice -}}
+{{- with $source -}}
+  {{- $root := . -}}
+  {{- range $.Site.RegularPages -}}
+    {{- if and (.IsDescendant $root) (ne .Params.superseded true) (eq (partial "page-language.html" .) $language) -}}
+      {{- $urls = $urls | append .RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $pages := where .Site.RegularPages "RelPermalink" "in" $urls -}}
+{{- return $pages.ByDate.Reverse -}}

@@ -1,0 +1,4 @@
+<section class="support-section container" aria-labelledby="{{ .id }}">
+  <div class="support-copy">{{ with .eyebrow }}<p class="eyebrow">{{ . }}</p>{{ end }}<h2 id="{{ .id }}">{{ .title }}</h2>{{ .body }}{{ with .link }}<a class="button button-outline" href="{{ partialCached "site-url.html" . . site.BaseURL }}">{{ $.linkLabel }} {{ partial "icon.html" "arrow" }}</a>{{ end }}</div>
+  <div class="support-process">{{ with .label }}<p class="process-label"><strong>{{ . }}</strong>{{ with $.detail }}<span>{{ . }}</span>{{ end }}</p>{{ end }}<ol>{{ range $index, $step := .steps }}{{ partial "blocks/process-step.html" (dict "number" (add $index 1) "title" $step.title "body" $step.body) }}{{ end }}</ol></div>
+</section>

@@ -1,0 +1,20 @@
+# Lumen's optional site parameters. Project configuration takes precedence.
+# Keep language definitions, site title, and publishing URLs in the project.
+# Empty values use the template fallbacks documented in README.md.
+[params]
+BaseColor = '#07143D'
+brand = ''
+brandSubtitle = ''
+logo = ''
+logoAlt = ''
+footerBrand = ''
+organization = ''
+description = ''
+socialImage = ''
+favicon = ''
+themeColor = ''
+newsSection = 'news'
+pagefindPath = '/pagefind/'
+searchURL = ''
+searchPlaceholder = ''
+searchLinks = []

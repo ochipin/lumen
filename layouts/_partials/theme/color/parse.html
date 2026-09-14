@@ -1,0 +1,19 @@
+{{- /* Accept only hex colours; never pass unchecked config into generated CSS. */ -}}
+{{- $raw := strings.TrimSpace (printf "%v" .) -}}
+{{- $colour := lower $raw -}}
+{{- if not (findRE `^#([0-9a-f]{3}|[0-9a-f]{6})$` $colour) -}}
+  {{- errorf "params.BaseColor must be a hexadecimal colour such as #245CF2 or #25F; received %q" $raw -}}
+  {{- $colour = "#245cf2" -}}
+{{- end -}}
+{{- $value := strings.TrimPrefix "#" $colour -}}
+{{- if eq (len $value) 3 -}}
+  {{- $value = printf "%s%s%s%s%s%s" (substr $value 0 1) (substr $value 0 1) (substr $value 1 1) (substr $value 1 1) (substr $value 2 1) (substr $value 2 1) -}}
+{{- end -}}
+{{- $digits := dict "0" 0 "1" 1 "2" 2 "3" 3 "4" 4 "5" 5 "6" 6 "7" 7 "8" 8 "9" 9 "a" 10 "b" 11 "c" 12 "d" 13 "e" 14 "f" 15 -}}
+{{- $rgb := slice -}}
+{{- range slice 0 2 4 -}}
+  {{- $high := index $digits (substr $value . 1) -}}
+  {{- $low := index $digits (substr $value (add . 1) 1) -}}
+  {{- $rgb = $rgb | append (add (mul $high 16) $low) -}}
+{{- end -}}
+{{- return $rgb -}}

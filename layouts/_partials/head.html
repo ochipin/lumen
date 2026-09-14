@@ -1,0 +1,47 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{ $title := site.Title }}
+{{ if not .IsHome }}{{ $title = printf "%s | %s" .Title site.Title }}{{ end }}
+{{ $metadata := partial "site/metadata.html" . }}
+{{ with $metadata.Title }}{{ $title = . }}{{ end }}
+{{ $pagination := partial "news/pagination-meta.html" . }}
+{{ if gt $pagination.PageNumber 1 }}
+  {{ $pageLabel := replace (partial "i18n.html" (dict "Page" . "Key" "lumen_page_number")) "{page}" (string $pagination.PageNumber) }}
+  {{ $title = printf "%s — %s" $title $pageLabel }}
+{{ end }}
+{{ $pageLinks := partial "page-links.html" . }}
+{{ $palette := partialCached "theme/palette.html" site.Params.basecolor site.Params.basecolor }}
+<title>{{ $title }}</title>
+{{ $description := .Params.meta_description | default .Description | default site.Params.description | default site.Title }}
+<meta name="description" content="{{ $description | plainify }}">
+<meta name="theme-color" content="{{ site.Params.themeColor | default (index $palette "base-color") }}">
+<link rel="canonical" href="{{ partialCached "site-url.html" (.Params.canonicalURL | default $pagination.URL) (.Params.canonicalURL | default $pagination.URL) site.BaseURL | absURL }}">
+{{ if and (eq $pagination.PageNumber 1) (gt (len $pageLinks.Translations) 1) }}
+  {{ range $pageLinks.Translations }}<link rel="alternate" hreflang="{{ .Locale }}" href="{{ .URL }}">{{ end }}
+{{ end }}
+{{ with $pagination.Pager }}
+  {{ with .Prev }}<link rel="prev" href="{{ .URL | absURL }}">{{ end }}
+  {{ with .Next }}<link rel="next" href="{{ .URL | absURL }}">{{ end }}
+{{ end }}
+{{ with .OutputFormats.Get "RSS" }}
+  <link rel="alternate" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ site.Title }}">
+{{ end }}
+{{ with site.Params.favicon }}
+  <link rel="icon" href="{{ partialCached "site-url.html" . . site.BaseURL }}">
+{{ end }}
+<meta property="og:title" content="{{ $title }}">
+<meta property="og:description" content="{{ $description | plainify }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:url" content="{{ $pagination.URL }}">
+<meta property="og:site_name" content="{{ site.Title }}">
+{{ with .Params.image | default site.Params.socialImage }}
+  <meta property="og:image" content="{{ partialCached "site-url.html" . . site.BaseURL | absURL }}">
+{{ end }}
+{{ if or (eq .Kind "404") (eq .Type "search") }}<meta name="robots" content="noindex">{{ end }}
+{{ hugo.Generator }}
+{{ partialCached "fonts.html" . site.BaseURL }}
+{{ with slice (resources.Get "css/main.css") (resources.Get "css/blocks.css") (resources.Get "css/navigation.css") (resources.Get "css/code-blocks.css") (resources.Get "css/toc.css") | resources.Concat "css/site.css" }}
+  {{ $style := . | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}">
+{{ end }}
+{{ partialCached "theme/palette-styles.html" . site.Params.basecolor site.BaseURL }}

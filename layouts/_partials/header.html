@@ -1,0 +1,44 @@
+{{ $links := partialCached "page-links.html" . .RelPermalink site.BaseURL }}
+{{ $navigation := partialCached "navigation/model.html" (dict "Language" $links.Language) $links.Language site.BaseURL }}
+{{ $currentNavigation := partial "navigation/current.html" (dict "Page" . "Model" $navigation) }}
+{{ $hasNavigation := gt (len (index $navigation.children "" | default slice)) 0 }}
+{{ $brand := site.Params.brand | default site.Title }}
+{{ $navigationLabel := partial "i18n.html" (dict "Page" . "Key" "lumen_main_navigation") }}
+{{ $searchLabel := partial "i18n.html" (dict "Page" . "Key" "lumen_search_site") }}
+{{ $menuLabel := partial "i18n.html" (dict "Page" . "Key" "lumen_menu") }}
+{{ $homeLabel := partial "i18n.html" (dict "Page" . "Key" "lumen_home") }}
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand{{ if not site.Params.logo }} brand-no-logo{{ end }}" href="{{ $links.HomeURL }}" aria-label="{{ $brand }} {{ $homeLabel }}">
+      {{ with site.Params.logo }}
+        <img class="brand-logo" src="{{ partialCached "site-url.html" . . site.BaseURL }}" alt="{{ site.Params.logoAlt | default $brand }}" width="72" height="42">
+      {{ end }}
+      <span class="brand-text">{{ $brand }}{{ with site.Params.brandSubtitle }}<span class="brand-subtitle">{{ . }}</span>{{ end }}</span>
+    </a>
+    {{ if $hasNavigation }}
+    <nav class="site-nav" id="site-navigation" aria-label="{{ $navigationLabel }}">
+      <ul>
+        {{ range index $navigation.children "" }}
+          {{ $panel := index $navigation.panels .id }}
+          <li class="nav-item">
+            {{ if $panel }}
+              <a class="nav-parent-link{{ if in $currentNavigation .id }} is-current{{ end }}" href="{{ .url }}"{{ if .page.Eq $ }} aria-current="page"{{ end }}>{{ .name }}</a>
+              <details class="nav-dropdown" name="main-navigation">
+                <summary aria-label="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_toggle_menu" "Data" (dict "Title" .name)) }}" aria-controls="{{ $panel.id }}"{{ if in $currentNavigation .id }} class="is-current"{{ end }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+                {{ partial "navigation/mega-menu.html" (dict "Page" $ "Model" $navigation "Entry" . "Panel" $panel) }}
+              </details>
+            {{ else }}
+              <a href="{{ .url }}"{{ if .page.Eq $ }} aria-current="page"{{ else if in $currentNavigation .id }} class="is-current"{{ end }}>{{ .name }}</a>
+            {{ end }}
+          </li>
+        {{ end }}
+      </ul>
+    </nav>
+    {{ end }}
+    <div class="header-actions">
+      {{ with $links.SearchURL }}<a class="search-link" aria-label="{{ $searchLabel }}" href="{{ . }}"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg><span>{{ $searchLabel }}</span></a>{{ end }}
+      {{ partial "language-switcher.html" (dict "Page" . "Links" $links) }}
+      {{ if $hasNavigation }}<button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation"><span class="menu-toggle-icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 6h18M3 12h18M3 18h18"/></svg></span><span class="menu-toggle-label">{{ $menuLabel }}</span></button>{{ end }}
+    </div>
+  </div>
+</header>

@@ -1,0 +1,9 @@
+{{- $title := .Get "title" -}}
+{{- if not $title }}{{ errorf "media-intro requires a title (%s)" .Position }}{{ end -}}
+{{- $image := .Get "image" -}}
+{{- if not $image }}{{ errorf "media-intro requires an image (%s)" .Position }}{{ end -}}
+{{- $link := .Get "link" -}}
+{{- $linkLabel := .Get "linkLabel" -}}
+{{- if and $link (not $linkLabel) }}{{ errorf "media-intro requires linkLabel when link is set (%s)" .Position }}{{ end -}}
+{{- $html := partial "blocks/media-intro.html" (dict "ID" (partial "blocks/id.html" .) "Title" $title "Eyebrow" (.Get "eyebrow") "Image" $image "Alt" (.Get "alt") "Caption" (.Get "caption") "Link" $link "LinkLabel" $linkLabel "HTML" (partial "blocks/markdown.html" (dict "Shortcode" . "Text" .InnerDeindent))) -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" $html) -}}

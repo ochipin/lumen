@@ -1,0 +1,20 @@
+{{- /* Page-specific state is intentionally separate from the cached model. */ -}}
+{{- $page := .Page -}}
+{{- $entries := .Model.entries -}}
+{{- $current := slice -}}
+{{- range $id, $entry := $entries -}}
+  {{- if or ($entry.page.Eq $page) ($entry.page.IsAncestor $page) -}}
+    {{- $current = $current | append $id -}}
+    {{- $parent := $entry.parent -}}
+    {{- range seq (len $entries) -}}
+      {{- if not $parent }}{{ break }}{{ end -}}
+      {{- $current = $current | append $parent -}}
+      {{- with index $entries $parent -}}
+        {{- $parent = .parent -}}
+      {{- else -}}
+        {{- break -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return ($current | uniq) -}}

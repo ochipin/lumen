@@ -1,0 +1,32 @@
+{{- /*
+  Resolve a URL from site configuration or front matter against baseURL.
+  Unlike relURL, a leading slash means the root of this site, including a
+  deployment subdirectory. Hugo-generated URLs already containing that
+  subdirectory are preserved. Schemes, protocol-relative URLs, fragments,
+  and query-only references pass through without alteration.
+*/ -}}
+{{- $url := string (. | default "") -}}
+{{- $result := $url -}}
+{{- $hasScheme := gt (len (findRE `^[a-zA-Z][a-zA-Z0-9+.-]*:` $url)) 0 -}}
+{{- if and $url (not $hasScheme) (not (strings.HasPrefix $url "//")) (not (strings.HasPrefix $url "#")) (not (strings.HasPrefix $url "?")) -}}
+  {{- if strings.HasPrefix $url "/" -}}
+    {{- $basePath := strings.TrimSuffix "/" (urls.Parse site.BaseURL).Path -}}
+    {{- $alreadyPrefixed := or
+      (eq $url $basePath)
+      (strings.HasPrefix $url (printf "%s/" $basePath))
+      (strings.HasPrefix $url (printf "%s?" $basePath))
+      (strings.HasPrefix $url (printf "%s#" $basePath))
+    -}}
+    {{- if not $alreadyPrefixed -}}
+      {{- $result = printf "%s%s" $basePath $url -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $result = urls.RelURL $url -}}
+  {{- end -}}
+{{- end -}}
+{{- /* Go's HTML URL filter requires the explicitly supported tel scheme to
+  be marked as a URL. Other unrecognized schemes remain subject to filtering. */ -}}
+{{- if strings.HasPrefix (strings.ToLower $result) "tel:" -}}
+  {{- $result = $result | safeURL -}}
+{{- end -}}
+{{- return $result -}}

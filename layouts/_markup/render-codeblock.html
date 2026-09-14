@@ -1,0 +1,25 @@
+{{- $title := .Attributes.filename | default .Attributes.title | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_code")) -}}
+{{- $language := .Type | default "text" -}}
+{{- if not (transform.CanHighlight $language) }}{{ $language = "text" }}{{ end -}}
+{{- /* HighlightCodeBlock already reads .Options. Passing them back would parse
+  normalized hl_lines ranges twice, so supply only the required overrides. */ -}}
+{{- $lineNumbers := "inline" -}}
+{{- range $name, $value := .Options -}}
+  {{- if and (eq (lower $name) "linenos") (eq (lower (printf "%v" $value)) "false") }}{{ $lineNumbers = false }}{{ end -}}
+{{- end -}}
+{{- $options := dict "linenos" $lineNumbers "linenumbersintable" false "noclasses" false "anchorlinenos" false "guesssyntax" false "hl_inline" false "type" $language "code" .Inner -}}
+{{- $highlighted := transform.HighlightCodeBlock . $options -}}
+{{- $code := replace $highlighted.Inner `<span class="ln">` `<span class="ln" aria-hidden="true" data-pagefind-ignore>` | safeHTML -}}
+<div class="code-block" data-language="{{ .Page.Language.Locale }}" data-copied="{{ partial "i18n.html" (dict "Page" .Page "Key" "lumen_copied") }}" data-copy-success="{{ partial "i18n.html" (dict "Page" .Page "Key" "lumen_copy_success") }}" data-copy-select="{{ partial "i18n.html" (dict "Page" .Page "Key" "lumen_copy_select") }}" data-copy-failed="{{ partial "i18n.html" (dict "Page" .Page "Key" "lumen_copy_failed") }}"{{ with .Attributes.id }} id="{{ . }}"{{ end }}>
+  <div class="code-header" data-pagefind-ignore>
+    <span class="code-title">{{ $title }}</span>
+    <span class="code-language">{{ $language }}</span>
+    <button class="code-copy" type="button" hidden aria-label="{{ partial "i18n.html" (dict "Page" .Page "Key" "lumen_copy_title" "Data" (dict "Title" $title)) }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>
+      <span class="code-copy-label">{{ partial "i18n.html" (dict "Page" .Page "Key" "lumen_copy") }}</span>
+    </button>
+    <span class="code-copy-status" role="status" aria-live="polite" aria-atomic="true"></span>
+  </div>
+  <div class="code-body" tabindex="0" role="region" aria-label="{{ partial "i18n.html" (dict "Page" .Page "Key" "lumen_code_scroll" "Data" (dict "Title" $title)) }}"><pre class="chroma"><code class="language-{{ $language }}" data-lang="{{ $language }}">{{ $code }}</code></pre></div>
+  <template class="code-source" hidden data-pagefind-ignore>{{ .Inner | htmlEscape | safeHTML }}</template>
+</div>

@@ -1,0 +1,13 @@
+{{- $page := .Page -}}
+{{- $model := .Model -}}
+{{- range .Entries -}}
+  <li>
+    <a class="mega-menu-link" href="{{ .url }}"{{ if .page.Eq $page }} aria-current="page"{{ end }}>
+      <span class="mega-menu-link-title">{{ .name }}{{ partial "icon.html" "arrow" }}</span>
+      {{- with .description }}<span class="mega-menu-description">{{ . }}</span>{{ end }}
+    </a>
+    {{- with index $model.children .id -}}
+      <ul class="mega-menu-links mega-menu-descendants">{{ partial "navigation/mega-links.html" (dict "Page" $page "Model" $model "Entries" .) }}</ul>
+    {{- end -}}
+  </li>
+{{- end -}}

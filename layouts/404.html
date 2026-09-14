@@ -1,0 +1,6 @@
+{{ define "main" }}
+  {{ partial "page-header.html" (dict "Page" . "Eyebrow" "404" "Title" (partial "i18n.html" (dict "Page" . "Key" "lumen_not_found")) "Description" (partial "i18n.html" (dict "Page" . "Key" "lumen_not_found_description"))) }}
+  <div class="page-shell container">
+    <a class="button button-primary" href="{{ site.Home.RelPermalink }}">{{ partial "i18n.html" (dict "Page" . "Key" "lumen_back_home") }} <span aria-hidden="true">→</span></a>
+  </div>
+{{ end }}

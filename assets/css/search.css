@@ -1,0 +1,31 @@
+.search-page { max-width: 1040px; }
+.site-search-form { padding: 30px; background: var(--wash); border-top: 3px solid var(--blue); }
+.site-search-form>label { display: block; font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+.site-search-field { display: flex; gap: 12px; }
+.site-search-field input { min-width: 0; flex: 1; min-height: 52px; padding: 12px 16px; background: white; border: 1px solid var(--accent-line); border-radius: 2px; color: var(--ink); font-size: 16px; }
+.site-search-field input::placeholder { color: var(--muted); }
+.site-search-field .button { min-width: 100px; justify-content: center; }
+.site-search-help { display: flex; justify-content: space-between; align-items: baseline; gap: 12px 24px; margin-top: 16px; }
+.site-search-help p { font-size: 12px; color: var(--muted); }
+#site-search-clear { flex-shrink: 0; padding: 0 0 2px; background: transparent; border: 0; border-bottom: 1px solid currentColor; font-size: 12px; color: var(--link); }
+.site-search-status { margin-top: 30px; font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+.site-search-results { list-style: none; margin: 0; padding: 0; }
+.site-search-results>li { padding: 26px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.site-search-results h2 { font-size: 21px; line-height: 1.7; margin-bottom: 10px; }
+.site-search-results p { font-size: 15px; color: var(--muted); line-height: 1.95; }
+.site-search-results mark { color: var(--ink); background: #fff0ad; }
+.site-search-more-wrap { text-align: center; margin-top: 26px; }
+.site-search-more-wrap .button { min-width: 230px; justify-content: center; }
+.search-notice { margin-top: 24px; padding: 22px; background: var(--wash); border-left: 3px solid var(--blue); font-size: 14px; }
+.search-notice .button { margin-top: 16px; }
+.search-browse { margin-top: 54px; padding-top: 26px; border-top: 1px solid var(--line); }
+.search-browse h2 { font-size: 17px; }
+.search-browse ul { display: flex; flex-wrap: wrap; gap: 15px 32px; list-style: none; padding: 0; margin: 17px 0 0; font-size: 14px; }
+.search-page [hidden] { display: none !important; }
+@media (max-width: 700px) {
+  .site-search-form { padding: 22px 18px; }
+  .site-search-field { flex-direction: column; }
+  .site-search-help { flex-wrap: wrap; }
+  .site-search-results h2 { font-size: 19px; }
+  .search-browse ul { flex-direction: column; gap: 14px; }
+}

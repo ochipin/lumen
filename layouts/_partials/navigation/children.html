@@ -1,0 +1,10 @@
+{{- $page := .Page -}}
+{{- $model := .Model -}}
+{{- range .Entries -}}
+  <li>
+    <a href="{{ .url }}"{{ if .page.Eq $page }} aria-current="page"{{ end }}>{{ .name }}</a>
+    {{- with index $model.children .id -}}
+      <ul class="nav-descendants">{{ partial "navigation/children.html" (dict "Page" $page "Model" $model "Entries" .) }}</ul>
+    {{- end -}}
+  </li>
+{{- end -}}

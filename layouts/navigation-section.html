@@ -1,0 +1,22 @@
+{{ define "main" }}
+  {{ $article := partial "article/content.html" (dict "Page" . "HTML" .Content) }}
+  {{ partial "page-header.html" (dict "Page" .) }}
+  <div class="page-shell container">
+    <div class="article-layout{{ if $article.Entries }} has-toc{{ end }}" data-article-layout>
+    <div class="article-main">
+    {{ with $article.Content }}<div class="prose section-intro" data-article-body>{{ . }}</div>{{ end }}
+    <div class="content-list">
+      {{ range .Pages.ByWeight }}
+        <article class="list-entry">
+          <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }} <span aria-hidden="true">→</span></a></h2>
+          {{ with .Description }}<p>{{ . }}</p>{{ end }}
+        </article>
+      {{ else }}
+        <p class="empty-state">{{ partial "i18n.html" (dict "Page" . "Key" "lumen_empty_articles") }}</p>
+      {{ end }}
+    </div>
+    </div>
+    {{ partial "article/toc.html" (dict "Page" . "Entries" $article.Entries) }}
+    </div>
+  </div>
+{{ end }}

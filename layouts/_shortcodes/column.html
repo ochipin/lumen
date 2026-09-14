@@ -1,0 +1,5 @@
+{{- if not (and .Parent (eq .Parent.Name "columns")) -}}
+  {{- errorf "column must be placed directly inside columns (%s)" .Position -}}
+{{- end -}}
+{{- $html := printf `<div class="content-column block-copy">%s</div>` (partial "blocks/markdown.html" (dict "Shortcode" . "Text" .InnerDeindent)) | safeHTML -}}
+{{- .Parent.Store.Add "columns" (slice $html) -}}

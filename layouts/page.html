@@ -1,0 +1,18 @@
+{{ define "main" }}
+  {{ $article := partial "article/content.html" (dict "Page" . "HTML" .Content) }}
+  {{ partial "page-header.html" (dict "Page" .) }}
+  <div class="page-shell container">
+    <div class="article-layout{{ if $article.Entries }} has-toc{{ end }}" data-article-layout>
+      <div class="article-main">
+      <article class="prose" data-article-body>
+        {{ if not .Date.IsZero }}<p class="entry-meta page-meta" data-pagefind-ignore><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>{{ with .Params.category }}<span class="category-label">{{ . }}</span>{{ end }}</p>{{ end }}
+        {{ $article.Content }}
+        {{ with .Params.sourceURL }}
+          <p class="source-link"><a href="{{ partialCached "site-url.html" . . site.BaseURL }}">{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_read_more") }} <span aria-hidden="true">→</span></a></p>
+        {{ end }}
+      </article>
+      </div>
+      {{ partial "article/toc.html" (dict "Page" . "Entries" $article.Entries) }}
+    </div>
+  </div>
+{{ end }}

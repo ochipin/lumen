@@ -1,0 +1,25 @@
+{{- $language := partial "page-language.html" .Page -}}
+{{- $reference := .Get "section" | default "research" -}}
+{{- $section := .Page.GetPage $reference -}}
+{{- if not $section -}}
+  {{- errorf "research-cards cannot find section %q (%s)" $reference .Position -}}
+{{- else if not $section.IsSection -}}
+  {{- errorf "research-cards section %q must reference an _index.md section (%s)" $reference .Position -}}
+{{- end -}}
+{{- $count := 3 -}}
+{{- if and .IsNamedParams (isset .Params "count") }}{{ $count = int (.Get "count") }}{{ end -}}
+{{- if lt $count 1 }}{{ errorf "research-cards count must be a positive integer (%s)" .Position }}{{ end -}}
+{{- $title := .Get "title" | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_research")) -}}
+{{- $link := .Get "link" -}}
+{{- with $section }}{{ $link = $link | default .RelPermalink }}{{ end -}}
+{{- $linkLabel := .Get "linkLabel" | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_view_research")) -}}
+{{- $id := printf "%s-title" (partial "blocks/id.html" .) -}}
+{{- $entries := slice -}}
+{{- with $section -}}
+  {{- range .RegularPagesRecursive.ByWeight -}}
+    {{- if and (ne .Params.superseded true) (eq (partial "page-language.html" .) $language) -}}
+      {{- $entries = $entries | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" (partial "blocks/research-cards.html" (dict "id" $id "title" $title "eyebrow" (.Get "eyebrow" | default "RESEARCH") "link" $link "linkLabel" $linkLabel "body" (partial "blocks/markdown.html" (dict "Shortcode" . "Text" .InnerDeindent)) "entries" (first $count $entries)))) -}}

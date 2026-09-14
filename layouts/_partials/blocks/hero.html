@@ -1,0 +1,15 @@
+{{- $hero := .Hero -}}
+<section class="hero{{ if not $hero.image }} hero--plain{{ end }}" aria-labelledby="hero-title">
+  {{ with $hero.image }}<img class="hero-photo" src="{{ partialCached "site-url.html" . . site.BaseURL }}" alt="{{ $hero.imageAlt }}" width="2000" height="1500" fetchpriority="high">{{ end }}
+  <div class="container hero-inner"><div class="hero-copy">
+    {{ with $hero.eyebrow }}<p class="eyebrow">{{ . }}</p>{{ end }}
+    <h1 id="hero-title">{{ $hero.title | default .Page.Title }}</h1>
+    {{ with $hero.subtitle }}<p class="hero-subtitle">{{ . }}</p>{{ end }}
+    {{ with $hero.description }}<p class="hero-description">{{ . }}</p>{{ end }}
+    <div class="hero-actions">
+      {{ with $hero.primaryURL }}<a class="button button-primary" href="{{ partialCached "site-url.html" . . site.BaseURL }}">{{ $hero.primaryLabel }} {{ partial "icon.html" "arrow" }}</a>{{ end }}
+      {{ with $hero.secondaryURL }}<a class="button button-ghost" href="{{ partialCached "site-url.html" . . site.BaseURL }}">{{ $hero.secondaryLabel }} {{ partial "icon.html" "arrow" }}</a>{{ end }}
+    </div>
+  </div></div>
+  {{ with $hero.imageSource }}<a class="hero-credit" href="{{ partialCached "site-url.html" . . site.BaseURL }}">{{ $hero.imageCredit }} ↗</a>{{ end }}
+</section>

@@ -1,0 +1,23 @@
+{{- $page := .Page -}}
+{{- $links := .Links -}}
+<details class="language-switcher">
+  <summary class="language-link" aria-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_language") }}: {{ $links.LanguageLabel }}">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6.5h14M5 17.5h14"/></svg>
+    <span lang="{{ $links.Locale }}">{{ $links.LanguageLabel }}</span>
+    <span class="language-chevron" aria-hidden="true">⌄</span>
+  </summary>
+  <div class="language-panel">
+    <ul class="language-options">
+      {{ range $links.Languages }}
+        <li>
+          {{ if .Current }}
+            <span class="language-current" lang="{{ .Locale }}" aria-current="true"><span>{{ .Label }}</span><span aria-hidden="true">✓</span></span>
+          {{ else }}
+            <a href="{{ .URL }}"{{ if .IsSearch }} data-language-search{{ end }} lang="{{ .Locale }}" hreflang="{{ .Locale }}"><span>{{ .Label }}</span>{{ if .IsHomeFallback }}<small lang="{{ $links.Locale }}">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_language_home") }}</small>{{ end }}</a>
+          {{ end }}
+        </li>
+      {{ end }}
+    </ul>
+    {{ if eq (len $links.Languages) 1 }}<p class="language-only">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_language_only") }}</p>{{ end }}
+  </div>
+</details>

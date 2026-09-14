@@ -1,0 +1,19 @@
+{{- /* HSL to final rounded sRGB. Inputs use degrees and S/L in [0, 1]. */ -}}
+{{- $hue := div (float .Hue) 60.0 -}}
+{{- $chroma := mul (sub 1.0 (math.Abs (sub (mul 2.0 .Lightness) 1.0))) .Saturation -}}
+{{- $sector := int (math.Floor $hue) -}}
+{{- $fraction := sub $hue (float $sector) -}}
+{{- $x := mul $chroma $fraction -}}
+{{- if eq (mod $sector 2) 1 -}}{{- $x = mul $chroma (sub 1.0 $fraction) -}}{{- end -}}
+{{- $channels := slice $chroma $x 0.0 -}}
+{{- if eq $sector 1 -}}{{- $channels = slice $x $chroma 0.0 -}}
+{{- else if eq $sector 2 -}}{{- $channels = slice 0.0 $chroma $x -}}
+{{- else if eq $sector 3 -}}{{- $channels = slice 0.0 $x $chroma -}}
+{{- else if eq $sector 4 -}}{{- $channels = slice $x 0.0 $chroma -}}
+{{- else if eq $sector 5 -}}{{- $channels = slice $chroma 0.0 $x -}}{{- end -}}
+{{- $offset := sub (float .Lightness) (div $chroma 2.0) -}}
+{{- $rgb := slice -}}
+{{- range $channels -}}
+  {{- $rgb = $rgb | append (int (math.Round (mul (add . $offset) 255.0))) -}}
+{{- end -}}
+{{- return $rgb -}}

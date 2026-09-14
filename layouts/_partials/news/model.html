@@ -1,0 +1,22 @@
+{{- /* Cache once per news collection. The full searchable text is published as
+  a separate JSON resource, so individual archive pages contain only their rows. */ -}}
+{{- $language := partial "page-language.html" . -}}
+{{- $section := .Params.newsSection | default .Site.Params.newsSection | default "news" -}}
+{{- $entries := partialCached "news-pages.html" . $language $section .Path .Site.BaseURL -}}
+{{- $categories := newScratch -}}
+{{- $rows := slice -}}
+{{- range $entries -}}
+  {{- $category := partial "news/category.html" . -}}
+  {{- $categories.Set $category.label (add ($categories.Get $category.label | default 0) 1) -}}
+  {{- $date := "" -}}
+  {{- $dateTime := "" -}}
+  {{- if not .Date.IsZero -}}
+    {{- $date = .Date.Format "2006.01.02" -}}
+    {{- $dateTime = .Date.Format "2006-01-02" -}}
+  {{- end -}}
+  {{- $search := printf "%s %s %s %s" .Title .Plain $date $category.label -}}
+  {{- $rows = $rows | append (dict "title" .Title "url" .RelPermalink "date" $date "dateTime" $dateTime "category" $category.label "style" $category.style "search" $search) -}}
+{{- end -}}
+{{- $key := printf "%s|%s|%s|%s" $language $section .Path .Site.BaseURL | crypto.MD5 -}}
+{{- $index := resources.FromString (printf "lumen/news/%s.json" $key) ($rows | jsonify) | fingerprint -}}
+{{- return (dict "categories" $categories.Values "total" (len $rows) "indexURL" $index.RelPermalink) -}}

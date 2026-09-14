@@ -1,0 +1,19 @@
+baseURL: https://example.org/
+locale: en-US
+defaultContentLanguage: en
+defaultContentLanguageInSubdir: false
+title: Field Notes
+theme: lumen
+enableRobotsTXT: true
+copyright: © Field Notes. A fictional publication.
+
+languages:
+  en:
+    label: English
+    locale: en-US
+
+params:
+  BaseColor: '#07143D'
+  description: Ideas, practical guides, and small experiments worth sharing.
+  brandSubtitle: Ideas worth keeping
+  organization: A fictional independent publication

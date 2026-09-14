@@ -1,0 +1,10 @@
+{{- /* Mix quantized sRGB channels. Contrast always uses these final RGB values. */ -}}
+{{- $from := .From -}}
+{{- $to := .To -}}
+{{- $amount := float .Amount -}}
+{{- $mixed := slice -}}
+{{- range seq 0 2 -}}
+  {{- $channel := add (mul (float (index $from .)) (sub 1.0 $amount)) (mul (float (index $to .)) $amount) -}}
+  {{- $mixed = $mixed | append (int (math.Round $channel)) -}}
+{{- end -}}
+{{- return $mixed -}}

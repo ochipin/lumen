@@ -1,0 +1,177 @@
+# Lumen interface translations. Override these keys in your site i18n directory.
+lumen_home:
+  other: "Home"
+lumen_breadcrumbs:
+  other: "Breadcrumbs"
+lumen_main_navigation:
+  other: "Main navigation"
+lumen_search_site:
+  other: "Search this site"
+lumen_menu:
+  other: "Menu"
+lumen_toggle_menu:
+  other: "Toggle {{ .Title }} menu"
+lumen_language:
+  other: "Language"
+lumen_site_policies:
+  other: "Site policies"
+lumen_skip_content:
+  other: "Skip to main content"
+lumen_table_scroll:
+  other: "Table. Scroll horizontally to see all columns."
+lumen_empty_articles:
+  other: "There are currently no articles."
+lumen_read_more:
+  other: "Read more"
+lumen_toc:
+  other: "On this page"
+lumen_not_found:
+  other: "Page not found"
+lumen_not_found_description:
+  other: "The page may have moved or its address may have changed. Start from the home page to find what you need."
+lumen_back_home:
+  other: "Back to home"
+lumen_info:
+  other: "Info"
+lumen_notice:
+  other: "Notice"
+lumen_important:
+  other: "Important"
+lumen_tips:
+  other: "Tips"
+lumen_note:
+  other: "Note"
+lumen_video:
+  other: "YouTube video"
+lumen_play_video:
+  other: "Play {{ .Title }}"
+lumen_watch_youtube:
+  other: "Watch on YouTube"
+lumen_video_fallback:
+  other: "Use the YouTube link to watch this video."
+lumen_highlights:
+  other: "Highlights"
+lumen_explore:
+  other: "Explore by purpose"
+lumen_news:
+  other: "News"
+lumen_view_news:
+  other: "View all news"
+lumen_research:
+  other: "Research outcomes"
+lumen_view_research:
+  other: "View all research"
+lumen_process:
+  other: "How we work"
+lumen_learn_more:
+  other: "Learn more"
+lumen_source:
+  other: "Source"
+lumen_code:
+  other: "Code"
+lumen_copy:
+  other: "Copy"
+lumen_copy_title:
+  other: "Copy {{ .Title }}"
+lumen_code_scroll:
+  other: "{{ .Title }}. Scroll horizontally to read the code."
+lumen_copied:
+  other: "Copied"
+lumen_copy_success:
+  other: "Code copied to clipboard."
+lumen_copy_select:
+  other: "Select and copy"
+lumen_copy_failed:
+  other: "Copy failed. Select the code and copy it manually, or press the copy button to try again."
+lumen_find_news:
+  other: "Find news"
+lumen_search_news:
+  other: "Search news"
+lumen_keywords:
+  other: "Keywords"
+lumen_news_placeholder:
+  other: "Keywords in the title or article"
+lumen_category:
+  other: "Category"
+lumen_all_categories:
+  other: "All categories"
+lumen_category_count:
+  other: "{{ .Label }} ({{ .Count }})"
+lumen_news_hint:
+  other: "Search all {{ .Count }} news articles, including past announcements."
+lumen_clear_filters:
+  other: "Clear filters"
+lumen_news_noscript:
+  other: "Use the page links below to read earlier news. Enable JavaScript to search and filter all {{ .Count }} articles."
+lumen_news_loading:
+  other: "Searching all news articles…"
+lumen_news_error:
+  other: "Search data could not be loaded. Try again, or clear the filters and use the page links to browse news."
+lumen_news_list:
+  other: "News"
+lumen_articles_suffix:
+  other: " articles"
+lumen_news_empty:
+  other: "No matching news found"
+lumen_news_empty_hint:
+  other: "Try fewer keywords or a different category."
+lumen_clear_all:
+  other: "Clear filters and show all news"
+lumen_news_pages:
+  other: "News pages"
+lumen_previous_page:
+  other: "Previous page"
+lumen_next_page:
+  other: "Next page"
+lumen_page_number:
+  other: "Page {page}"
+lumen_news_count:
+  other: " of {total} news items ({range} shown)"
+lumen_search_placeholder:
+  other: "Search titles and text"
+lumen_search_keywords:
+  other: "Search by keyword"
+lumen_search:
+  other: "Search"
+lumen_search_hint:
+  other: "Searches page titles and body text across all sections."
+lumen_clear:
+  other: "Clear"
+lumen_search_noscript:
+  other: "Enable JavaScript to search, or browse the sections below."
+lumen_search_idle:
+  other: "Enter keywords to search this site."
+lumen_search_error:
+  other: "Search could not be loaded. Please try again, or browse the sections below."
+lumen_retry:
+  other: "Try again"
+lumen_search_results:
+  other: "Search results"
+lumen_show_more:
+  other: "Show more"
+lumen_browse:
+  other: "Browse by topic"
+lumen_search_composing:
+  other: "Finish entering your keywords to search."
+lumen_search_loading:
+  other: "Searching…"
+lumen_search_more:
+  other: "Loading more results…"
+lumen_search_zero:
+  other: "No pages match “{query}”. Try another keyword."
+lumen_search_count:
+  other: "{total} results for “{query}” ({shown} shown)."
+lumen_untitled:
+  other: "Untitled page"
+lumen_current_language:
+  other: "Current language"
+lumen_language_home:
+  other: "Language home page"
+lumen_language_only:
+  other: "Only this language is available."
+
+# Native language names for sites that omit languages.<code>.label.
+lumen_language_name_ja:
+  other: "日本語"
+lumen_language_name_en:
+  other: "English"

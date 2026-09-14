@@ -1,0 +1,24 @@
+{{- /* Index only published pages once, including aliases used as public URLs. */ -}}
+{{- $state := newScratch -}}
+{{- $state.Set "urls" dict -}}
+{{- $state.Set "paths" dict -}}
+{{- $state.Set "search" dict -}}
+{{- $state.Set "news" dict -}}
+{{- range .Pages -}}
+  {{- if .RelPermalink -}}
+    {{- $state.SetInMap "urls" (strings.TrimSuffix "/" (urls.Parse .RelPermalink).Path) . -}}
+    {{- $state.SetInMap "paths" (strings.TrimSuffix "/" .Path) . -}}
+    {{- $language := partial "page-language.html" . -}}
+    {{- if and (eq .Type "search") (not (isset ($state.Get "search") $language)) }}{{ $state.SetInMap "search" $language . }}{{ end -}}
+    {{- if and .IsSection (or (eq .Type "news") (eq .Section "news")) (not (isset ($state.Get "news") $language)) }}{{ $state.SetInMap "news" $language . }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- range .Pages -}}
+  {{- $page := . -}}
+  {{- range .Aliases -}}
+    {{- $alias := partialCached "site-url.html" . . site.BaseURL -}}
+    {{- $path := strings.TrimSuffix "/" (urls.Parse $alias).Path -}}
+    {{- if not (isset ($state.Get "urls") $path) }}{{ $state.SetInMap "urls" $path $page }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict "urls" ($state.Get "urls") "paths" ($state.Get "paths") "search" ($state.Get "search") "news" ($state.Get "news")) -}}

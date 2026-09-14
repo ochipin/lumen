@@ -1,0 +1,24 @@
+{{- /* Walk Hugo's page tree without rendering .Content or scanning the site again. */ -}}
+{{- $page := .Page -}}
+{{- $state := .State -}}
+{{- $language := .Language -}}
+{{- $settings := partial "navigation/settings.html" $page -}}
+{{- if and $settings.enabled (eq (partial "page-language.html" $page) $language) (in (slice "home" "section" "page") $page.Kind) -}}
+  {{- $values := $settings.values -}}
+  {{- $weight := $page.Weight -}}
+  {{- if isset $values "weight" }}{{ $weight = int $values.weight }}{{ end -}}
+  {{- $description := $page.Description -}}
+  {{- if isset $values "description" }}{{ $description = $values.description }}{{ end -}}
+  {{- $overview := $page.LinkTitle -}}
+  {{- if isset $values "overview" }}{{ $overview = $values.overview }}{{ end -}}
+  {{- $id := $page.Path -}}
+  {{- $entry := dict "id" $id "name" ($values.name | default $page.LinkTitle) "weight" $weight "url" $page.RelPermalink "page" $page "parent" .Parent "overview" $overview "description" $description "icon" ($values.icon | default $page.Params.icon | default "layers") "expand" $settings.expand -}}
+  {{- $state.SetInMap "entries" $id $entry -}}
+  {{- $siblings := index ($state.Get "children") .Parent | default slice -}}
+  {{- $state.SetInMap "children" .Parent ($siblings | append $entry) -}}
+  {{- if $settings.expand -}}
+    {{- range $page.Pages -}}
+      {{- partial "navigation/collect.html" (dict "Page" . "State" $state "Language" $language "Parent" $id) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

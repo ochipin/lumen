@@ -1,0 +1,23 @@
+{{- /* Convert quantized sRGB to HSL; hue is in degrees, S/L in [0, 1]. */ -}}
+{{- $r := div (float (index . 0)) 255.0 -}}
+{{- $g := div (float (index . 1)) 255.0 -}}
+{{- $b := div (float (index . 2)) 255.0 -}}
+{{- $high := math.Max $r (math.Max $g $b) -}}
+{{- $low := math.Min $r (math.Min $g $b) -}}
+{{- $delta := sub $high $low -}}
+{{- $lightness := div (add $high $low) 2.0 -}}
+{{- $hue := 0.0 -}}
+{{- $saturation := 0.0 -}}
+{{- if gt $delta 0.0 -}}
+  {{- $saturation = div $delta (sub 1.0 (math.Abs (sub (mul 2.0 $lightness) 1.0))) -}}
+  {{- if eq $high $r -}}
+    {{- $hue = div (sub $g $b) $delta -}}
+    {{- if lt $hue 0.0 -}}{{- $hue = add $hue 6.0 -}}{{- end -}}
+  {{- else if eq $high $g -}}
+    {{- $hue = add (div (sub $b $r) $delta) 2.0 -}}
+  {{- else -}}
+    {{- $hue = add (div (sub $r $g) $delta) 4.0 -}}
+  {{- end -}}
+  {{- $hue = mul $hue 60.0 -}}
+{{- end -}}
+{{- return (dict "Hue" $hue "Saturation" $saturation "Lightness" $lightness) -}}

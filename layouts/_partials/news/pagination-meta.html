@@ -1,0 +1,6 @@
+{{- $result := dict "PageNumber" 1 "URL" .Permalink -}}
+{{- if and (eq .Type "news") (in (slice "section" "taxonomy" "term") .Kind) -}}
+  {{- $pager := partial "news/paginator.html" . -}}
+  {{- $result = dict "PageNumber" $pager.PageNumber "URL" ($pager.URL | absURL) "Pager" $pager -}}
+{{- end -}}
+{{- return $result -}}

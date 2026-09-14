@@ -1,0 +1,34 @@
+{{- $language := .Language.Lang -}}
+{{- $siteBase := urls.Parse .Site.BaseURL -}}
+{{- $model := partialCached "links/model.html" .Site .Site.Language.Lang .Site.BaseURL -}}
+{{- $searchReference := .Params.searchURL | default .Site.Params.searchURL -}}
+{{- $searchURL := (partial "links/resolve.html" (dict "Page" . "URL" $searchReference)).URL -}}
+{{- if not $searchURL }}{{ with index $model.search $language }}{{ $searchURL = .RelPermalink }}{{ end }}{{ end -}}
+{{- $translations := dict -}}
+{{- $alternates := slice -}}
+{{- range .AllTranslations -}}
+  {{- $translations = merge $translations (dict .Language.Lang .) -}}
+  {{- $alternates = $alternates | append (dict "Locale" .Language.Locale "URL" .Permalink) -}}
+{{- end -}}
+{{- $languages := slice -}}
+{{- range .Site.Home.AllTranslations -}}
+  {{- $target := index $translations .Language.Lang -}}
+  {{- $isHomeFallback := not $target -}}
+  {{- if not $target }}{{ $target = . }}{{ end -}}
+  {{- $targetURL := $target.RelPermalink -}}
+  {{- $targetBase := urls.Parse $target.Site.BaseURL -}}
+  {{- /* A relative path keeps same-origin previews portable. Multihost sites
+    need the destination origin, including its scheme and port. */ -}}
+  {{- if or (ne (lower $targetBase.Scheme) (lower $siteBase.Scheme)) (ne (lower $targetBase.Host) (lower $siteBase.Host)) -}}
+    {{- $targetURL = $target.Permalink -}}
+  {{- end -}}
+  {{- $languages = $languages | append (dict
+    "Code" .Language.Lang "Locale" .Language.Locale
+    "Label" (partial "language-label.html" .)
+    "URL" $targetURL "Current" (eq .Language.Lang $language)
+    "IsHomeFallback" $isHomeFallback "IsSearch" (eq $target.Type "search")) -}}
+{{- end -}}
+{{- return (dict "Language" $language "Locale" .Language.Locale
+  "LanguageLabel" (partial "language-label.html" .)
+  "HomeURL" .Site.Home.RelPermalink "SearchURL" $searchURL
+  "Languages" $languages "Translations" $alternates) -}}

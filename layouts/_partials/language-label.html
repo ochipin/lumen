@@ -1,0 +1,5 @@
+{{- $label := .Language.Label -}}
+{{- if not $label -}}
+  {{- $label = partial "i18n.html" (dict "Page" . "Key" (printf "lumen_language_name_%s" .Language.Lang)) -}}
+{{- end -}}
+{{- return ($label | default .Language.Name) -}}

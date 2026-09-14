@@ -1,0 +1,21 @@
+{{- $result := dict "URL" "" -}}
+{{- $reference := .URL | default "" -}}
+{{- if $reference -}}
+  {{- $url := partialCached "site-url.html" $reference $reference site.BaseURL -}}
+  {{- $parsed := urls.Parse $url -}}
+  {{- $host := (urls.Parse .Page.Site.BaseURL).Hostname -}}
+  {{- if and $parsed.Hostname (ne $parsed.Hostname $host) -}}
+    {{- if in (slice "http" "https") $parsed.Scheme }}{{ $result = dict "URL" $url }}{{ end -}}
+  {{- else -}}
+    {{- $model := partialCached "links/model.html" .Page.Site .Page.Site.Language.Lang .Page.Site.BaseURL -}}
+    {{- $path := strings.TrimSuffix "/" $parsed.Path -}}
+    {{- $target := index $model.urls $path | default (index $model.paths $path) -}}
+    {{- with $target -}}
+      {{- $targetURL := .RelPermalink -}}
+      {{- with $parsed.RawQuery }}{{ $targetURL = printf "%s?%s" $targetURL . }}{{ end -}}
+      {{- with $parsed.Fragment }}{{ $targetURL = printf "%s#%s" $targetURL . }}{{ end -}}
+      {{- $result = dict "URL" $targetURL "Page" . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

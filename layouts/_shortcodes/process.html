@@ -1,0 +1,7 @@
+{{- /* Reading Inner renders child steps. Each child stores its value by ordinal
+  on this shortcode, so multiple process blocks and repeated renders stay isolated. */ -}}
+{{- $body := partial "blocks/markdown.html" (dict "Shortcode" . "Text" .InnerDeindent) -}}
+{{- $steps := .Store.GetSortedMapValues "process-steps" -}}
+{{- $title := .Get "title" | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_process")) -}}
+{{- $id := printf "%s-title" (partial "blocks/id.html" .) -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" (partial "blocks/process.html" (dict "id" $id "title" $title "eyebrow" (.Get "eyebrow") "body" $body "link" (.Get "link") "linkLabel" (.Get "linkLabel" | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_learn_more"))) "label" (.Get "label") "detail" (.Get "detail") "steps" $steps))) -}}

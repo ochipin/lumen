@@ -1,0 +1,6 @@
+{{- $shortcode := .Shortcode -}}
+{{- $title := $shortcode.Get "title" | default (partial "i18n.html" (dict "Page" $shortcode.Page "Key" (printf "lumen_%s" $shortcode.Name))) -}}
+{{- $id := partial "blocks/id.html" $shortcode -}}
+{{- $body := partial "blocks/markdown.html" (dict "Shortcode" $shortcode "Text" .Text) -}}
+{{- $html := printf `<div class="callout callout--%s" role="note" aria-labelledby="%s-label"><p class="callout-label" id="%s-label">%s</p><div class="callout-body">%s</div></div>` $shortcode.Name $id $id (htmlEscape $title) $body | safeHTML -}}
+{{- partial "blocks/output.html" (dict "Shortcode" $shortcode "HTML" $html) -}}

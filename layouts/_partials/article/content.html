@@ -1,0 +1,83 @@
+{{- /* Work on the final rendered body so Markdown, imported HTML and shortcode
+  fragments share one TOC. Only missing/empty heading ids are changed. */ -}}
+{{- $content := string .HTML -}}
+{{- $entries := slice -}}
+{{- if findRE `(?i)<h[23]\b` $content 1 -}}
+  {{- $attributes := `(?s)\s+([^\s"'=<>/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>]+)))?` -}}
+  {{- $used := newScratch -}}
+  {{- $used.Set "ids" dict -}}
+  {{- /* Reserve ids and named legacy anchors throughout the body. */ -}}
+  {{- range findRE `<[A-Za-z][^>"']*(?:(?:"[^"]*"|'[^']*')[^>"']*)*>` $content -}}
+    {{- $anchor := findRE `(?i)^<a(?:\s|>)` . 1 -}}
+    {{- range findRESubmatch $attributes . -}}
+      {{- if or (eq (lower (index . 1)) "id") (and $anchor (eq (lower (index . 1)) "name")) -}}
+        {{- $id := htmlUnescape ((index . 2) | default (index . 3) | default (index . 4)) -}}
+        {{- if $id }}{{ $used.SetInMap "ids" $id true }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Match protected regions in document order, so comment-like strings
+    inside a script do not consume text beyond that script's closing tag. */ -}}
+  {{- $working := $content -}}
+  {{- $masks := slice -}}
+  {{- $prefix := printf "LUMENARTICLEMASK%s" (crypto.SHA256 $content) -}}
+  {{- $patterns := slice `(?s)<!--.*?(?:-->|$)` -}}
+  {{- range slice "script" "style" "pre" "template" "textarea" -}}
+    {{- $patterns = $patterns | append (printf `(?is)<%s\b[^>]*>.*?(?:</%s\s*>|$)` . .) -}}
+  {{- end -}}
+  {{- range findRE (delimit $patterns "|") $working -}}
+    {{- $token := printf "%s%dEND" $prefix (len $masks) -}}
+    {{- $masks = $masks | append (dict "token" $token "html" .) -}}
+    {{- $working = replace $working . $token 1 -}}
+  {{- end -}}
+
+  {{- $headings := findRESubmatch `(?is)(<h([23])\b((?:[^>"']|"[^"]*"|'[^']*')*)>)(.*?)</h[23]\s*>` $working -}}
+  {{- range $headings -}}
+    {{- $match := . -}}
+    {{- $opening := index . 1 -}}
+    {{- $level := int (index . 2) -}}
+    {{- $text := index . 4 -}}
+    {{- range $masks }}{{ $text = replace $text .token "" }}{{ end -}}
+    {{- $text = strings.TrimSpace (replaceRE `\s+` " " (htmlUnescape (plainify $text))) -}}
+    {{- if $text -}}
+      {{- $id := "" -}}
+      {{- $idAttribute := "" -}}
+      {{- range findRESubmatch $attributes (index $match 3) -}}
+        {{- if eq (lower (index . 1)) "id" -}}
+          {{- $id = htmlUnescape ((index . 2) | default (index . 3) | default (index . 4)) -}}
+          {{- $idAttribute = index . 0 -}}
+          {{- break -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if not (strings.TrimSpace $id) -}}
+        {{- $slug := anchorize $text | default (substr (crypto.SHA256 $text) 0 12) -}}
+        {{- $baseID := printf "section-%s" $slug -}}
+        {{- $id = $baseID -}}
+        {{- range seq (add (add (len ($used.Get "ids")) (len $headings)) 1) -}}
+          {{- if not (isset ($used.Get "ids") $id) }}{{ break }}{{ end -}}
+          {{- $id = printf "%s-%d" $baseID (add . 1) -}}
+        {{- end -}}
+        {{- $attribute := printf ` id="%s"` (htmlEscape $id) -}}
+        {{- $newOpening := "" -}}
+        {{- if $idAttribute -}}
+          {{- $newOpening = replace $opening $idAttribute $attribute 1 -}}
+        {{- else -}}
+          {{- $newOpening = printf "%s%s>" (strings.TrimSuffix ">" $opening) $attribute -}}
+        {{- end -}}
+        {{- $replacement := replace (index $match 0) $opening $newOpening 1 -}}
+        {{- $working = replace $working (index $match 0) $replacement 1 -}}
+        {{- $used.SetInMap "ids" $id true -}}
+      {{- end -}}
+      {{- $entries = $entries | append (dict "level" $level "id" $id "text" $text) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range seq (len $masks) -}}
+    {{- $mask := index $masks (sub (len $masks) .) -}}
+    {{- $working = replace $working $mask.token $mask.html 1 -}}
+  {{- end -}}
+  {{- $content = $working -}}
+{{- end -}}
+{{- /* Hiding the TOC must not remove generated bookmark targets. */ -}}
+{{- if eq .Page.Params.toc false }}{{ $entries = slice }}{{ end -}}
+{{- return (dict "Content" ($content | safeHTML) "Entries" $entries) -}}

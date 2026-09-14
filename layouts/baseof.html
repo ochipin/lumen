@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{{ $links := partial "page-links.html" . }}
+<html lang="{{ $links.Locale }}" dir="{{ site.Language.Direction | default "ltr" }}">
+  <head>
+    {{ partial "head.html" . }}
+    {{ block "head" . }}{{ end }}
+  </head>
+  <body data-table-scroll-label="{{ partial "i18n.html" (dict "Page" . "Key" "lumen_table_scroll") }}" data-video-label="{{ partial "i18n.html" (dict "Page" . "Key" "lumen_video") }}">
+    <a class="skip-link" href="#main-content">{{ partial "i18n.html" (dict "Page" . "Key" "lumen_skip_content") }}</a>
+    {{ partial "header.html" . }}
+    <main id="main-content" tabindex="-1"{{ if partial "search/indexable.html" . }} data-pagefind-body{{ end }}>
+      {{ block "main" . }}{{ end }}
+    </main>
+    {{ partial "footer.html" . }}
+    {{ with resources.Get "js/main.js" }}
+      {{ $script := . | minify | fingerprint }}
+      <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}" defer></script>
+    {{ end }}
+    {{ with resources.Get "js/code-blocks.js" }}
+      {{ $script := . | minify | fingerprint }}
+      <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}" defer></script>
+    {{ end }}
+    {{ with resources.Get "js/toc.js" }}
+      {{ $script := . | minify | fingerprint }}
+      <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}" defer></script>
+    {{ end }}
+  </body>
+</html>

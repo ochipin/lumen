@@ -1,0 +1,24 @@
+{{- /* Only root pages need to opt in. Descendants are included unless excluded. */ -}}
+{{- $navigation := .Params.navigation | default dict -}}
+{{- $registered := isset $navigation "main" -}}
+{{- $enabled := true -}}
+{{- $settings := dict -}}
+{{- if $registered -}}
+  {{- if reflect.IsMap $navigation.main -}}
+    {{- $settings = $navigation.main -}}
+  {{- else if eq (printf "%T" $navigation.main) "bool" -}}
+    {{- $enabled = $navigation.main -}}
+  {{- else -}}
+    {{- errorf "navigation.main on %s must be true, false, or a map" .Path -}}
+    {{- $enabled = false -}}
+  {{- end -}}
+{{- end -}}
+{{- $expand := true -}}
+{{- if isset $settings "expand" -}}
+  {{- if eq (printf "%T" $settings.expand) "bool" -}}
+    {{- $expand = $settings.expand -}}
+  {{- else -}}
+    {{- errorf "navigation.main.expand on %s must be true or false" .Path -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict "registered" $registered "enabled" $enabled "expand" $expand "values" $settings) -}}

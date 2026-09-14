@@ -1,0 +1,19 @@
+{{- $ratio := .Get "ratio" | default "equal" -}}
+{{- $align := .Get "align" | default "center" -}}
+{{- if not (in (slice "equal" "wide-left" "wide-right") $ratio) -}}
+  {{- errorf "columns: ratio must be equal, wide-left, or wide-right (%s)" .Position -}}
+{{- end -}}
+{{- if not (in (slice "center" "start") $align) -}}
+  {{- errorf "columns: align must be center or start (%s)" .Position -}}
+{{- end -}}
+{{- /* Evaluating Inner renders the column children and fills their parent's
+  Store. Reject unwrapped text or HTML instead of emitting it without Markdown
+  processing. The Store also preserves the author's column order. */ -}}
+{{- $inner := strings.TrimSpace .Inner -}}
+{{- $columns := .Store.Get "columns" | default slice -}}
+{{- if or $inner (ne (len $columns) 2) -}}
+  {{- errorf "columns requires exactly two column children and no unwrapped content (%s)" .Position -}}
+{{- end -}}
+{{- $html := partial "blocks/columns.html" (dict "Ratio" $ratio "Align" $align "HTML" (delimit $columns "" | safeHTML)) -}}
+{{- $html = printf `<div class="container block-columns">%s</div>` $html | safeHTML -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" $html) -}}

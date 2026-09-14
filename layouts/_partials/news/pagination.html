@@ -1,0 +1,36 @@
+{{- $page := .Page -}}
+{{- $pager := .Pager -}}
+<nav id="news-pagination" aria-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_news_pages") }}" data-pagefind-ignore{{ if le $pager.TotalPages 1 }} hidden{{ end }}>
+  {{- if gt $pager.TotalPages 1 }}
+    <ul class="news-pagination-list">
+      <li>
+        {{ if $pager.HasPrev }}<a class="news-page-button" href="{{ $pager.Prev.URL }}" rel="prev" aria-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_previous_page") }}">‹</a>{{ else }}<span class="news-page-button" aria-disabled="true" aria-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_previous_page") }}">‹</span>{{ end }}
+      </li>
+      {{- /* Keep five number/ellipsis slots, matching the filtered pager. */ -}}
+      {{- $numbers := seq $pager.TotalPages -}}
+      {{- if gt $pager.TotalPages 5 -}}
+        {{- if le $pager.PageNumber 3 -}}
+          {{- $numbers = slice 1 2 3 0 $pager.TotalPages -}}
+        {{- else if ge $pager.PageNumber (sub $pager.TotalPages 2) -}}
+          {{- $numbers = slice 1 0 (sub $pager.TotalPages 2) (sub $pager.TotalPages 1) $pager.TotalPages -}}
+        {{- else -}}
+          {{- $numbers = slice 1 0 $pager.PageNumber 0 $pager.TotalPages -}}
+        {{- end -}}
+      {{- end -}}
+      {{- range $numbers }}
+        <li>
+          {{ if eq . 0 }}
+            <span class="news-pagination-ellipsis" aria-hidden="true">…</span>
+          {{ else }}
+            {{ $label := replace (partial "i18n.html" (dict "Page" $page "Key" "lumen_page_number")) "{page}" (string .) }}
+            {{ $target := index $pager.Pagers (sub . 1) }}
+            {{ if eq . $pager.PageNumber }}<span class="news-page-button" aria-current="page" aria-label="{{ $label }}">{{ . }}</span>{{ else }}<a class="news-page-button" href="{{ $target.URL }}" aria-label="{{ $label }}">{{ . }}</a>{{ end }}
+          {{ end }}
+        </li>
+      {{- end }}
+      <li>
+        {{ if $pager.HasNext }}<a class="news-page-button" href="{{ $pager.Next.URL }}" rel="next" aria-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_next_page") }}">›</a>{{ else }}<span class="news-page-button" aria-disabled="true" aria-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_next_page") }}">›</span>{{ end }}
+      </li>
+    </ul>
+  {{- end }}
+</nav>

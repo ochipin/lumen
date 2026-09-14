@@ -1,0 +1,4 @@
+<figure class="research-figure">
+  <img src="{{ partialCached "site-url.html" (.Get "src") (.Get "src") site.BaseURL }}" alt="{{ .Get "alt" }}" loading="lazy"{{ with .Get "width" }} width="{{ . }}"{{ end }}{{ with .Get "height" }} height="{{ . }}"{{ end }}>
+  <figcaption>{{ .Get "caption" }}{{ with .Get "source" }} <a href="{{ partialCached "site-url.html" . . site.BaseURL }}">{{ partial "i18n.html" (dict "Page" $.Page "Key" "lumen_source") }} ↗</a>{{ end }}</figcaption>
+</figure>

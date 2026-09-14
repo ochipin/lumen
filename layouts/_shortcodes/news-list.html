@@ -1,0 +1,12 @@
+{{- $title := .Get "title" | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_news")) -}}
+{{- $count := 4 -}}
+{{- if and .IsNamedParams (isset .Params "count") }}{{ $count = int (.Get "count") }}{{ end -}}
+{{- if lt $count 1 }}{{ errorf "news-list count must be a positive integer (%s)" .Position }}{{ end -}}
+{{- $link := .Get "link" -}}
+{{- if not $link -}}
+  {{- $model := partialCached "links/model.html" .Page.Site .Page.Site.Language.Lang .Page.Site.BaseURL -}}
+  {{- with index $model.news (partial "page-language.html" .Page) }}{{ $link = .RelPermalink }}{{ end -}}
+{{- end -}}
+{{- $linkLabel := .Get "linkLabel" | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_view_news")) -}}
+{{- $id := printf "%s-title" (partial "blocks/id.html" .) -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" (partial "blocks/news-list.html" (dict "id" $id "title" $title "eyebrow" (.Get "eyebrow" | default "NEWS") "link" $link "linkLabel" $linkLabel "entries" (first $count (partial "news-pages.html" .Page)) "defaultCategory" (partial "i18n.html" (dict "Page" .Page "Key" "lumen_news"))))) -}}

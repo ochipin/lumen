@@ -1,0 +1,6 @@
+{{- $destination := .Destination -}}
+{{- if or (strings.HasPrefix $destination "/") (findRE `^[a-zA-Z][a-zA-Z0-9+.-]*:` $destination) -}}
+  {{- $destination = partialCached "site-url.html" $destination $destination site.BaseURL -}}
+{{- end -}}
+<a href="{{ $destination }}"{{ with .Title }} title="{{ . }}"{{ end }}>{{ .Text }}</a>
+{{- /* Preserve whitespace around inline Markdown links. */ -}}

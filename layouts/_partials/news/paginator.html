@@ -1,0 +1,21 @@
+{{- /* Always use this collection when initializing pagination, including from
+  the head. Hugo caches the first .Paginate call for each list page. Do not cache
+  this partial: each generated page needs its own current Pager. */ -}}
+{{- $language := partial "page-language.html" . -}}
+{{- $section := .Params.newsSection | default .Site.Params.newsSection | default "news" -}}
+{{- $entries := partialCached "news-pages.html" . $language $section .Path .Site.BaseURL -}}
+{{- $pager := dict -}}
+{{- if eq .Layout "paginated" -}}
+  {{- $pager = .Paginate $entries -}}
+{{- else -}}
+  {{- /* A single-view model keeps the archive and filtering markup shared.
+    Do not call .Paginate here: a list that did not opt in must not generate
+    pager pages or even Hugo's /page/1/ alias. */ -}}
+  {{- $total := len $entries -}}
+  {{- $pager = dict
+    "Pages" $entries "PageNumber" 1 "PagerSize" (math.Max 1 $total | int)
+    "TotalNumberOfElements" $total "NumberOfElements" $total "TotalPages" 1
+    "URL" .RelPermalink "Pagers" (slice (dict "URL" .RelPermalink))
+    "HasPrev" false "HasNext" false "Prev" false "Next" false -}}
+{{- end -}}
+{{- return $pager -}}

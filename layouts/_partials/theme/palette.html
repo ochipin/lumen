@@ -1,0 +1,99 @@
+{{- /* Input: a #RRGGBB/#RGB string, or nil to use params.BaseColor/default.
+  Output: semantic CSS-token names without the '--' prefix, with final colours.
+  Call once through partialCached; all colour work happens during the build. */ -}}
+{{- $input := . -}}
+{{- if eq $input nil -}}{{- $input = site.Params.basecolor -}}{{- end -}}
+{{- if eq $input nil -}}{{- $input = "#245CF2" -}}{{- end -}}
+{{- $base := partial "theme/color/parse.html" $input -}}
+{{- $hsl := partial "theme/color/hsl.html" $base -}}
+{{- $black := slice 0 0 0 -}}
+{{- $white := slice 255 255 255 -}}
+{{- $wash := partial "theme/color/mix.html" (dict "From" $base "To" $white "Amount" 0.97) -}}
+{{- $soft := partial "theme/color/mix.html" (dict "From" $base "To" $white "Amount" 0.93) -}}
+{{- $line := partial "theme/color/mix.html" (dict "From" $base "To" $white "Amount" 0.84) -}}
+{{- /* Callouts and code headers retain a neutral surface independently of the
+  brand hue. Links must also retain contrast inside those components. */ -}}
+{{- $neutralSurface := slice 248 249 251 -}}
+{{- $lightSurfaces := slice $white $wash $soft $neutralSurface -}}
+{{- /* A dark brand colour describes the large surfaces, not necessarily its
+  interactive accent. Lift dark seeds to a vivid same-hue accent before the
+  contrast check. Neutral seeds remain neutral. */ -}}
+{{- $accentSeed := $base -}}
+{{- if lt $hsl.Lightness 0.45 -}}
+  {{- $accentSaturation := $hsl.Saturation -}}
+  {{- if gt $accentSaturation 0.12 -}}
+    {{- $accentSaturation = add $accentSaturation (mul (sub 1.0 $accentSaturation) 0.55) -}}
+  {{- end -}}
+  {{- $accentSeed = partial "theme/color/from-hsl.html" (dict "Hue" $hsl.Hue "Saturation" $accentSaturation "Lightness" 0.55) -}}
+{{- end -}}
+{{- $accent := partial "theme/color/accessible.html" (dict "Color" $accentSeed "Toward" $black "Backgrounds" $lightSurfaces "Target" 4.5) -}}
+{{- $link := partial "theme/color/mix.html" (dict "From" $accent "To" $black "Amount" 0.08) -}}
+{{- $primaryHover := partial "theme/color/mix.html" (dict "From" $accent "To" $black "Amount" 0.14) -}}
+{{- $accentLineStart := partial "theme/color/mix.html" (dict "From" $accent "To" $white "Amount" 0.45) -}}
+{{- $accentLine := partial "theme/color/accessible.html" (dict "Color" $accentLineStart "Toward" $accent "Backgrounds" $lightSurfaces "Target" 3.0) -}}
+
+{{- /* Dark seeds need a lighter coloured endpoint: multiplying a navy seed
+  by 0.9 made the whole banner appear flat. Keep most of the banner deep and
+  reveal that endpoint on its right edge. Pastel seeds retain a gentle tint
+  change. Final RGB channels progress monotonically between all three stops,
+  so endpoint contrast also covers every intermediate gradient colour. */ -}}
+{{- $whiteContrast := partial "theme/color/contrast.html" (dict "A" $white "B" $base) -}}
+{{- $blackContrast := partial "theme/color/contrast.html" (dict "A" $black "B" $base) -}}
+{{- $onBanner := $white -}}
+{{- $awayFromText := $black -}}
+{{- if gt $blackContrast $whiteContrast -}}
+  {{- $onBanner = $black -}}
+  {{- $awayFromText = $white -}}
+{{- end -}}
+{{- $end := partial "theme/color/mix.html" (dict "From" $base "To" $black "Amount" 0.10) -}}
+{{- $middleAmount := 0.68 -}}
+{{- $band := $base -}}
+{{- if lt $hsl.Lightness 0.35 -}}
+  {{- $lifted := partial "theme/color/from-hsl.html" (dict "Hue" $hsl.Hue "Saturation" (mul $hsl.Saturation 0.9) "Lightness" (math.Min 0.42 (add $hsl.Lightness 0.14))) -}}
+  {{- $end = slice -}}
+  {{- range seq 0 2 -}}
+    {{- $end = $end | append (int (math.Max (index $base .) (index $lifted .))) -}}
+  {{- end -}}
+  {{- $end = partial "theme/color/accessible.html" (dict "Color" $end "Toward" $base "Backgrounds" (slice $onBanner) "Target" 4.5) -}}
+  {{- $middleAmount = 0.18 -}}
+  {{- $band = $end -}}
+{{- else if lt (partial "theme/color/contrast.html" (dict "A" $onBanner "B" $end)) 4.5 -}}
+  {{- $end = partial "theme/color/mix.html" (dict "From" $base "To" $white "Amount" 0.12) -}}
+{{- end -}}
+{{- $middle := partial "theme/color/mix.html" (dict "From" $base "To" $end "Amount" $middleAmount) -}}
+{{- $bannerSurfaces := slice $base $end -}}
+{{- $bannerMutedStart := partial "theme/color/mix.html" (dict "From" $onBanner "To" $base "Amount" 0.23) -}}
+{{- $bannerMuted := partial "theme/color/accessible.html" (dict "Color" $bannerMutedStart "Toward" $onBanner "Backgrounds" $bannerSurfaces "Target" 4.5) -}}
+{{- $bannerEyebrowStart := partial "theme/color/mix.html" (dict "From" $onBanner "To" $base "Amount" 0.13) -}}
+{{- $bannerEyebrow := partial "theme/color/accessible.html" (dict "Color" $bannerEyebrowStart "Toward" $onBanner "Backgrounds" $bannerSurfaces "Target" 4.5) -}}
+{{- $bannerBorderStart := partial "theme/color/mix.html" (dict "From" $base "To" $onBanner "Amount" 0.25) -}}
+{{- $bannerBorder := partial "theme/color/accessible.html" (dict "Color" $bannerBorderStart "Toward" $onBanner "Backgrounds" $bannerSurfaces "Target" 3.0) -}}
+{{- $bannerPanel := partial "theme/color/mix.html" (dict "From" $base "To" $awayFromText "Amount" 0.06) -}}
+
+{{- /* Cap the strongest channel instead of darkening every seed by a fixed
+  percentage. An already deep brand colour should stay recognisably coloured. */ -}}
+{{- $strongest := math.Max (index $base 0) (math.Max (index $base 1) (index $base 2)) -}}
+{{- $darken := 0.0 -}}
+{{- if gt $strongest 61 -}}{{- $darken = sub 1.0 (div 61.0 (float $strongest)) -}}{{- end -}}
+{{- $footer := partial "theme/color/mix.html" (dict "From" $base "To" $black "Amount" $darken) -}}
+{{- $navy := $footer -}}
+{{- $footerMutedStart := partial "theme/color/mix.html" (dict "From" $white "To" $footer "Amount" 0.26) -}}
+{{- $footerMuted := partial "theme/color/accessible.html" (dict "Color" $footerMutedStart "Toward" $white "Backgrounds" (slice $footer) "Target" 4.5) -}}
+{{- $footerLine := partial "theme/color/mix.html" (dict "From" $footer "To" $white "Amount" 0.22) -}}
+
+{{- $tokens := dict
+  "base-color" $base "band" $band
+  "blue" $accent "link" $link
+  "navy" $navy "line" $line "wash" $wash
+  "banner-start" $base "banner-middle" $middle "banner-end" $end
+  "on-banner" $onBanner "banner-muted" $bannerMuted "banner-eyebrow" $bannerEyebrow
+  "banner-border" $bannerBorder "banner-panel" $bannerPanel
+  "primary-bg" $accent "primary-hover" $primaryHover "primary-ink" $white
+  "footer-bg" $footer "footer-ink" $white "footer-muted" $footerMuted "footer-line" $footerLine
+  "accent-soft" $soft "accent-line" $accentLine "focus" $accent
+-}}
+{{- $palette := dict "ink" "#132342" "muted" "#52627b" "hero-overlay-rgb" (printf "%d, %d, %d" (index $base 0) (index $base 1) (index $base 2)) -}}
+{{- range $name, $colour := $tokens -}}
+  {{- $palette = merge $palette (dict $name (partial "theme/color/hex.html" $colour)) -}}
+{{- end -}}
+{{- return $palette -}}

@@ -1,0 +1,29 @@
+{{- /* Call outside the body container so both bands span the full viewport.
+  Explicit empty overrides suppress the corresponding optional text. */ -}}
+{{ $page := .Page }}
+{{ $title := $page.Title }}
+{{ $eyebrow := $page.Params.eyebrow }}
+{{ $description := $page.Description }}
+{{ $titleID := "page-title" }}
+{{ if isset . "Title" }}{{ $title = index . "Title" }}{{ end }}
+{{ if isset . "Eyebrow" }}{{ $eyebrow = index . "Eyebrow" }}{{ end }}
+{{ if isset . "Description" }}{{ $description = index . "Description" }}{{ end }}
+{{ if isset . "TitleID" }}{{ $titleID = index . "TitleID" }}{{ end }}
+{{ $breadcrumbs := "" }}
+{{ if isset . "Breadcrumbs" }}
+  {{ $breadcrumbs = index . "Breadcrumbs" }}
+{{ else }}
+  {{ $breadcrumbs = partial "breadcrumbs.html" $page }}
+{{ end }}
+{{ with $breadcrumbs }}
+  <div class="page-breadcrumbs" data-pagefind-ignore>
+    <div class="container">{{ . | safeHTML }}</div>
+  </div>
+{{ end }}
+<header class="page-banner">
+  <div class="container page-banner-inner">
+    {{ with $eyebrow }}<p class="page-banner-eyebrow">{{ . }}</p>{{ end }}
+    <h1 class="page-banner-title" id="{{ $titleID }}" data-pagefind-meta="title">{{ $title }}</h1>
+    {{ with $description }}<p class="page-banner-description">{{ . }}</p>{{ end }}
+  </div>
+</header>

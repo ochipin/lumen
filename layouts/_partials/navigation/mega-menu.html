@@ -1,0 +1,33 @@
+{{- $page := .Page -}}
+{{- $model := .Model -}}
+{{- $entry := .Entry -}}
+{{- $panel := .Panel -}}
+<div class="mega-menu" id="{{ $panel.id }}" aria-labelledby="{{ $panel.id }}-title">
+  <div class="container mega-menu-inner">
+    <div class="mega-menu-heading">
+      <h2 id="{{ $panel.id }}-title">{{ $entry.name }}</h2>
+      {{- with $entry.description }}<p>{{ . }}</p>{{ end }}
+      {{- with $entry.overview }}<a class="mega-menu-overview" href="{{ $entry.url }}"{{ if $entry.page.Eq $page }} aria-current="page"{{ end }}>{{ . }}{{ partial "icon.html" "arrow" }}</a>{{ end }}
+    </div>
+    <div class="mega-menu-groups">
+      {{- range $panel.groups -}}
+        {{- $groupID := printf "%s-group-%s" $panel.id (substr (crypto.SHA256 .id) 0 12) -}}
+        <section class="mega-menu-group" aria-labelledby="{{ $groupID }}">
+          <h3 class="mega-menu-group-title" id="{{ $groupID }}">
+            {{- if .url -}}
+              <a class="mega-menu-category-link" href="{{ .url }}"{{ if .page.Eq $page }} aria-current="page"{{ end }}><span class="mega-menu-icon" aria-hidden="true">{{ partial "icon.html" .icon }}</span><span>{{ .name }}</span>{{ partial "icon.html" "arrow" }}</a>
+            {{- else -}}
+              <span class="mega-menu-icon" aria-hidden="true">{{ partial "icon.html" .icon }}</span><span>{{ .name }}</span>
+            {{- end -}}
+          </h3>
+          {{- with .description }}<p class="mega-menu-category-description">{{ . }}</p>{{ end }}
+          {{- with .entries }}
+            <ul class="mega-menu-links">
+              {{ partial "navigation/mega-links.html" (dict "Page" $page "Model" $model "Entries" .) }}
+            </ul>
+          {{- end }}
+        </section>
+      {{- end }}
+    </div>
+  </div>
+</div>

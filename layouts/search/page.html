@@ -1,0 +1,62 @@
+{{ define "head" }}
+  {{ with resources.Get "css/search.css" }}
+    {{ $style := . | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $style.RelPermalink }}" integrity="{{ $style.Data.Integrity }}">
+  {{ end }}
+{{ end }}
+
+{{ define "main" }}
+  {{ $language := partial "page-language.html" . }}
+  {{ $placeholder := .Params.searchPlaceholder | default site.Params.searchPlaceholder | default (partial "i18n.html" (dict "Page" $ "Key" "lumen_search_placeholder")) }}
+  {{ partial "page-header.html" (dict "Page" .) }}
+  <div class="page-shell container search-page">
+    <div id="site-search" data-language="{{ $language }}" data-composing="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_composing") }}" data-loading="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_loading") }}" data-more="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_more") }}" data-zero="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_zero") }}" data-count="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_count") }}" data-untitled="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_untitled") }}" data-bundle-path="{{ partialCached "site-url.html" (.Params.pagefindPath | default site.Params.pagefindPath | default "/pagefind/") (.Params.pagefindPath | default site.Params.pagefindPath | default "/pagefind/") site.BaseURL }}" data-base-url="{{ (urls.Parse site.BaseURL).Path | default "/" }}">
+      <form id="site-search-form" class="site-search-form" role="search" action="{{ .RelPermalink }}" hidden>
+        <label for="site-search-input">{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_keywords") }}</label>
+        <div class="site-search-field">
+          <input id="site-search-input" type="search" name="q" autocomplete="off" placeholder="{{ $placeholder }}" aria-describedby="site-search-hint">
+          <button type="submit" class="button button-primary">{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search") }}</button>
+        </div>
+        <div class="site-search-help">
+          <p id="site-search-hint">{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_hint") }}</p>
+          <button id="site-search-clear" type="button">{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_clear") }}</button>
+        </div>
+      </form>
+      <noscript><p class="search-notice">{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_noscript") }}</p></noscript>
+      <p id="site-search-status" class="site-search-status" role="status" aria-live="polite" data-idle="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_idle") }}" hidden></p>
+      <div id="site-search-error" class="search-notice" role="alert" hidden>
+        <p>{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_error") }}</p>
+        <button id="site-search-retry" class="button button-outline" type="button">{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_retry") }}</button>
+      </div>
+      <ul id="site-search-results" class="site-search-results" aria-label="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_search_results") }}"></ul>
+      <div class="site-search-more-wrap"><button id="site-search-more" class="button button-outline" type="button" aria-controls="site-search-results" hidden>{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_show_more") }}</button></div>
+    </div>
+    {{ $browseLinks := slice }}
+    {{ with .Params.searchLinks | default site.Params.searchLinks }}
+      {{ range . }}
+        {{ $label := .name | default .label }}
+        {{ $resolved := partial "links/resolve.html" (dict "Page" $ "URL" (.pageRef | default .pageref | default .url)) }}
+        {{ with $resolved.Page }}{{ $label = $label | default .LinkTitle }}{{ end }}
+        {{ with $resolved.URL }}{{ $browseLinks = $browseLinks | append (dict "URL" . "Label" ($label | default .)) }}{{ end }}
+      {{ end }}
+    {{ else }}
+      {{ $navigation := partialCached "navigation/model.html" (dict "Language" $language) $language site.BaseURL }}
+      {{ range index $navigation.children "" }}{{ $browseLinks = $browseLinks | append (dict "URL" .url "Label" .name) }}{{ end }}
+      {{ if not $browseLinks }}
+        {{ range site.Home.Sections.ByWeight }}
+          {{ if eq (partial "page-language.html" .) $language }}{{ $browseLinks = $browseLinks | append (dict "URL" .RelPermalink "Label" .LinkTitle) }}{{ end }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+    {{ with $browseLinks }}
+    <nav class="search-browse" aria-label="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_browse") }}">
+      <h2>{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_browse") }}</h2>
+      <ul>{{ range . }}<li><a href="{{ .URL }}">{{ .Label }} <span aria-hidden="true">→</span></a></li>{{ end }}</ul>
+    </nav>
+    {{ end }}
+  </div>
+  {{ with resources.Get "js/site-search.js" }}
+    {{ $script := . | minify | fingerprint }}
+    <script src="{{ $script.RelPermalink }}" integrity="{{ $script.Data.Integrity }}" defer></script>
+  {{ end }}
+{{ end }}

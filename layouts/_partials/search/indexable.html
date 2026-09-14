@@ -1,0 +1,1 @@
+{{- return (not (or (eq .Kind "404") (eq .Type "search") .Params.searchExclude .Params.superseded (gt (partial "news/pagination-meta.html" .).PageNumber 1))) -}}

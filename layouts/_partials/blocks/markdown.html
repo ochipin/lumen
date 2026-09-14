@@ -1,0 +1,40 @@
+{{- $shortcode := .Shortcode -}}
+{{- $source := $shortcode.InnerDeindent -}}
+{{- if isset . "Text" }}{{ $source = .Text }}{{ end -}}
+{{- $id := partial "blocks/id.html" $shortcode -}}
+{{- /* Hugo has already evaluated real child shortcodes. Any delimiters still
+  present here are literal examples (including Hugo's escaped shortcode syntax).
+  Keep RenderString from treating those examples as another shortcode call. */ -}}
+{{- $literalTokens := dict -}}
+{{- range slice "{{<" "{{%" -}}
+  {{- $token := printf "LUMENLITERAL%sEND" (crypto.SHA256 (printf "%s%s" $id .)) -}}
+  {{- $literalTokens = merge $literalTokens (dict $token .) -}}
+  {{- $source = replace $source . $token -}}
+{{- end -}}
+{{- $html := $shortcode.Page.RenderString (dict "display" "block") $source -}}
+{{- /* RenderString gives each fragment its own heading-id namespace. Prefix
+  only this fragment's generated headings, before restoring any child HTML.
+  Fragment links to these headings follow the same mapping. */ -}}
+{{- $anchors := dict -}}
+{{- range findRESubmatch `(<h[1-6]\b[^>]*\sid=")([^"]+)(")` $html -}}
+  {{- $oldID := htmlUnescape (index . 2) -}}
+  {{- $newID := printf "%s-%s" $id $oldID -}}
+  {{- $anchors = merge $anchors (dict $oldID $newID) -}}
+  {{- $heading := printf "%s%s%s" (index . 1) (htmlEscape $newID) (index . 3) -}}
+  {{- $html = replace $html (index . 0) $heading -}}
+{{- end -}}
+{{- range $match := findRESubmatch `(<a\b[^>]*\shref=")(#[^"]+)(")` $html -}}
+  {{- $fragment := (urls.Parse (htmlUnescape (index $match 2))).Fragment -}}
+  {{- with index $anchors $fragment -}}
+    {{- $link := printf "%s#%s%s" (index $match 1) (htmlEscape .) (index $match 3) -}}
+    {{- $html = replace $html (index $match 0) $link -}}
+  {{- end -}}
+{{- end -}}
+{{- range $token, $literal := $literalTokens -}}
+  {{- $html = replace $html $token (htmlEscape $literal) -}}
+{{- end -}}
+{{- range $token, $block := $shortcode.Store.Get "blockHTML" -}}
+  {{- $html = replace $html (printf "<p>%s</p>" $token) $block -}}
+  {{- $html = replace $html $token $block -}}
+{{- end -}}
+{{- return ($html | safeHTML) -}}

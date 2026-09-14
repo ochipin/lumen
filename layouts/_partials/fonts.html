@@ -1,0 +1,8 @@
+{{- /* Call with partialCached "fonts.html" . site.BaseURL from the site head.
+  Unicode ranges select only the subsets used by the current page; no font is
+  preloaded. ExecuteAsTemplate publishes every bundled resource using Hugo's
+  own baseURL-aware URLs, then fingerprints the generated stylesheet. */ -}}
+{{- with resources.Get "css/fonts.css" -}}
+  {{- $stylesheet := . | resources.ExecuteAsTemplate "css/fonts.css" $ | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $stylesheet.RelPermalink }}" integrity="{{ $stylesheet.Data.Integrity }}">
+{{- end -}}

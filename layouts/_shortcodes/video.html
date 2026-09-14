@@ -1,0 +1,6 @@
+{{- $id := .Get "id" -}}
+{{- if not (findRE `^[A-Za-z0-9_-]{11}$` $id) -}}
+  {{- errorf "video requires an 11-character YouTube id (%s)" .Position -}}
+{{- end -}}
+{{- $html := partial "blocks/video.html" (dict "Page" .Page "ID" $id "Thumbnail" (.Get "thumbnail") "Title" (.Get "title") "Caption" (.Get "caption") "Alt" (.Get "alt") "PlayLabel" (.Get "playLabel")) -}}
+{{- partial "blocks/output.html" (dict "Shortcode" . "HTML" $html) -}}

@@ -1,0 +1,34 @@
+{{ $links := partialCached "page-links.html" . .RelPermalink site.BaseURL }}
+{{ $navigation := partialCached "navigation/model.html" (dict "Language" $links.Language) $links.Language site.BaseURL }}
+{{ $groups := slice }}
+{{ range $navigation.groups }}{{ if index $navigation.footer .id }}{{ $groups = $groups | append . }}{{ end }}{{ end }}
+{{ $organization := site.Params.organization }}
+{{ with (partial "site/metadata.html" .).Organization }}{{ $organization = . }}{{ end }}
+<footer class="site-footer">
+  <div class="container">
+    {{ with $groups }}
+    <div class="footer-grid" data-columns="{{ len . }}">
+      {{ range . }}
+        <nav aria-label="{{ .name }}">
+          <h2>{{ .name }}</h2>
+          <ul>
+            {{ range index $navigation.footer .id }}
+              <li><a href="{{ .url }}">{{ .name }}{{ if or (strings.HasPrefix .url "https://") (strings.HasPrefix .url "http://") }}<span class="external-mark" aria-hidden="true">↗</span>{{ end }}</a></li>
+            {{ end }}
+          </ul>
+        </nav>
+      {{ end }}
+    </div>
+    {{ end }}
+    <div class="footer-bottom">
+      <div>
+        <a class="footer-brand" href="{{ $links.HomeURL }}">{{ site.Params.footerBrand | default site.Params.brand | default site.Title }}</a>
+        {{ with $organization }}<p>{{ . }}</p>{{ end }}
+        <small>{{ with site.Copyright }}{{ . }}{{ else }}© {{ now.Year }} {{ site.Title }}{{ end }}</small>
+      </div>
+      {{ with index $navigation.footer "legal" }}
+        <nav aria-label="{{ partial "i18n.html" (dict "Page" $ "Key" "lumen_site_policies") }}"><ul>{{ range . }}<li><a href="{{ .url }}">{{ .name }}</a></li>{{ end }}</ul></nav>
+      {{ end }}
+    </div>
+  </div>
+</footer>

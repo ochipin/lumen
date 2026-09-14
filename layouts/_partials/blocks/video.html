@@ -1,0 +1,19 @@
+{{- $title := .Title | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_video")) -}}
+{{- $playLabel := .PlayLabel | default (partial "i18n.html" (dict "Page" .Page "Key" "lumen_play_video" "Data" (dict "Title" $title))) -}}
+{{- $externalLabel := partial "i18n.html" (dict "Page" .Page "Key" "lumen_watch_youtube") -}}
+{{- $fallback := partial "i18n.html" (dict "Page" .Page "Key" "lumen_video_fallback") -}}
+<div class="video-block">
+  <div class="video-frame" data-video-id="{{ .ID }}" data-video-title="{{ $title }}">
+    <button class="video-launch" type="button" aria-label="{{ $playLabel }}">
+      {{- with .Thumbnail }}
+      <img src="{{ partialCached "site-url.html" . . site.BaseURL }}" alt="{{ $.Alt | default $title }}" width="1280" height="720" loading="lazy">
+      {{- else }}
+      <span class="video-placeholder" aria-hidden="true">YouTube</span>
+      {{- end }}
+      <span class="video-play">{{ partial "icon.html" "play" }}</span>
+      {{- with .Caption }}<span class="video-caption">{{ . }}</span>{{ end }}
+    </button>
+  </div>
+  <a class="video-external" href="https://www.youtube.com/watch?v={{ .ID }}">{{ $externalLabel }} ↗</a>
+  <noscript><p class="video-fallback">{{ $fallback }}</p></noscript>
+</div>

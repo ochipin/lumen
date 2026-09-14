@@ -1,0 +1,9 @@
+{{- /* Keep this link after the main stylesheet. Cache by BaseColor/baseURL. */ -}}
+{{- $palette := partial "theme/palette.html" site.Params.basecolor -}}
+{{- $declarations := slice -}}
+{{- range $name, $colour := $palette -}}
+  {{- $declarations = $declarations | append (printf "--%s:%s;" $name $colour) -}}
+{{- end -}}
+{{- $source := printf ":root{%s}" (delimit $declarations "") -}}
+{{- $stylesheet := resources.FromString "css/palette.css" $source | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $stylesheet.RelPermalink }}" integrity="{{ $stylesheet.Data.Integrity }}">

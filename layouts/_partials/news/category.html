@@ -1,0 +1,8 @@
+{{- /* Category names are editorial content; authors translate them per language.
+  categoryStyle/newsCategoryStyle selects a stable semantic color independently. */ -}}
+{{- $label := .Params.newsCategory | default .Params.category | default (partial "i18n.html" (dict "Page" . "Key" "lumen_news")) -}}
+{{- $known := slice "news" "event" "report" "system" "important" "maintenance" "call" "paper" -}}
+{{- $inferred := "news" -}}
+{{- if in $known (lower $label) }}{{ $inferred = lower $label }}{{ end -}}
+{{- $style := .Params.newsCategoryStyle | default .Params.categoryStyle | default $inferred -}}
+{{- return (dict "label" $label "style" $style) -}}

@@ -1,0 +1,9 @@
+{{- if not .Parent -}}
+  {{- errorf "process-step must be placed directly inside process (%s)" .Position -}}
+{{- else if ne .Parent.Name "process" -}}
+  {{- errorf "process-step must be placed directly inside process (%s)" .Position -}}
+{{- else -}}
+  {{- $title := .Get "title" -}}
+  {{- if not $title }}{{ errorf "process-step requires a title (%s)" .Position }}{{ end -}}
+  {{- .Parent.Store.SetInMap "process-steps" (printf "%09d" .Ordinal) (dict "title" $title "body" (partial "blocks/markdown.html" (dict "Shortcode" . "Text" .InnerDeindent))) -}}
+{{- end -}}

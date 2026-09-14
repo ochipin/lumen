@@ -1,0 +1,6 @@
+name = "Lumen"
+license = "MIT"
+description = "A clean Hugo theme with a color-derived palette, content-tree navigation, composable shortcodes, and optional Pagefind search."
+min_version = "0.166.0"
+tags = ["blog", "documentation", "responsive", "light", "multilingual"]
+features = ["color palette", "mega menu", "shortcodes", "table of contents", "code highlighting", "news", "search"]
