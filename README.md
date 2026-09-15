@@ -21,7 +21,7 @@ params:
 
 `content/_index.md` にホームの本文、`content/about/index.md` などに記事を作り、`hugo server` で確認します。公開用の生成は `hugo` です。
 
-動く例は [exampleSite](exampleSite/README.md) にあります。架空の読み物サイト「Field Notes」で、テーマ以外のテンプレート・画像・データを必要としません。例のコピー方法、検索を含めた起動方法も同梱しています。
+動く例は [exampleSite](exampleSite/README.md) にあります。英語版（`/`）と日本語版（`/ja/`）を備えた架空の読み物サイト「Field Notes」で、テーマ以外のテンプレート・画像・データを必要としません。日本語の本文は `*.ja.md` に置き、言語切り替えで対応する英語ページへ移動できます。例のコピー方法、検索を含めた起動方法も同梱しています。
 
 ## 設定とデフォルト値
 

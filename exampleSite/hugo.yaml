@@ -11,9 +11,20 @@ languages:
   en:
     label: English
     locale: en-US
+    weight: 10
+    params:
+      description: Ideas, practical guides, and small experiments worth sharing.
+      brandSubtitle: Ideas worth keeping
+      organization: A fictional independent publication
+  ja:
+    label: 日本語
+    locale: ja-JP
+    weight: 20
+    copyright: © Field Notes. 架空の読み物サイトです。
+    params:
+      description: 分かち合いたいアイデア、実践的なガイド、小さな実験を集めた読み物サイトです。
+      brandSubtitle: 書きとめたいアイデア
+      organization: 架空の個人メディア
 
 params:
   BaseColor: '#07143D'
-  description: Ideas, practical guides, and small experiments worth sharing.
-  brandSubtitle: Ideas worth keeping
-  organization: A fictional independent publication

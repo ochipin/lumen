@@ -1,6 +1,8 @@
 # Field Notes — Lumen example site
 
-Field Notes is a fictional, English-only publication. All example text is original demo content; no real institution, person, event, or research result is represented. Fonts are bundled with the theme. The example needs no images, external font service, migration data, or site-specific scripts.
+Field Notes is a fictional publication with English and Japanese editions. All example text is original demo content; no real institution, person, event, or research result is represented. Fonts are bundled with the theme. The example needs no images, external font service, migration data, or site-specific scripts.
+
+日本語版は `/ja/`、英語版は `/` で表示します。ヘッダーの言語切り替えで、同じページの日本語版・英語版を行き来できます。日本語の記事は `content/` 配下の `*.ja.md` にあります。
 
 The example's `hugo.yaml` contains site choices, not theme defaults. Lumen supplies optional defaults from its own `hugo.toml`; the project overrides only the values it needs. The site title also supplies the header brand, and the search page is discovered automatically.
 
@@ -16,7 +18,7 @@ cd ../field-notes
 hugo server
 ```
 
-Open the address printed by Hugo. To create the public files, run:
+Open the address printed by Hugo for English, or append `ja/` to open Japanese (normally `http://localhost:1313/ja/`). To create the public files, run:
 
 ```sh
 hugo
@@ -46,11 +48,31 @@ languages:
   en:
     label: English
     locale: en-US
+    weight: 10
+  ja:
+    label: 日本語
+    locale: ja-JP
+    weight: 20
 ```
 
-English pages are published at the root, without an `/en/` prefix. The header still shows the language control when the site has only one language. The theme does not define any site languages itself.
+English pages are published at the root, without an `/en/` prefix; Japanese pages are published under `/ja/`. Every example content page has a Japanese counterpart. Hugo pairs them by filename, so the language control links to the corresponding translated page rather than returning to its homepage:
 
-Add another entry under `languages` and supply that language's articles to create a multilingual site. Use matching relative paths in language-specific `contentDir` directories, or Hugo's translated filenames and `translationKey`. Localize organization names and other custom values under `languages.<language>.params`; no English-specific URL or organization parameters are needed. Shared interface strings live in the theme's `i18n` dictionaries. Add further translations in the project's `i18n/` directory. See the [theme documentation](../README.md#言語) for a Japanese, English, and French example.
+```text
+content/
+  _index.md                  # English home
+  _index.ja.md               # Japanese home
+  about.md                   # /about/
+  about.ja.md                # /ja/about/
+  guides/
+    _index.md                # English section
+    _index.ja.md             # Japanese section
+```
+
+Files without a language suffix belong to the default language, English in this example. `*.ja.md` files contain the Japanese titles, descriptions, navigation labels, and bodies. Literal internal links in those files use `/ja/` too; shortcode page references such as `page="/guides"` resolve within the current language. The site's description, subtitle, organization, and copyright are localized in `hugo.yaml`. The theme itself does not define site languages.
+
+To make Japanese the default later, first give the existing unsuffixed English files an `.en.md` suffix, then change `defaultContentLanguage` to `ja` and update literal links to match Japanese at `/` and English at `/en/`.
+
+To add another language, add an entry under `languages` and matching translated files. Localize custom site values under `languages.<language>.params`; no English-specific URL or organization parameters are needed. Shared interface strings live in the theme's `i18n` dictionaries. Add further translations in the project's `i18n/` directory. See the [theme documentation](../README.md#言語) for a Japanese, English, and French example.
 
 ## What to edit
 
@@ -60,6 +82,8 @@ Add another entry under `languages` and supply that language's articles to creat
 - `content/guides/writing/code-examples.md` demonstrates code filenames, line numbers, a highlighted line, and copying code.
 - `content/journal/` holds ordinary articles. The homepage cards read from this section.
 - `content/news/` holds announcements with dates and categories. The Updates page provides keyword and category filtering.
+
+The adjacent `.ja.md` files provide Japanese versions of all the content above, including the five callouts, code examples, news categories, and search page.
 
 The root Guides section uses `params.navigation.main`; the Journal and Updates sections use `expand: false` to keep their articles out of the header menu. Footer placement belongs to each page's `params.navigation.footer` metadata. The configuration file contains no menu URL lists.
 
@@ -80,4 +104,4 @@ For a local search preview after indexing, serve the generated output with any s
 python3 -m http.server 8080 --directory public
 ```
 
-Without an index, the search page explains that search is unavailable; the rest of the site remains usable. The regular Hugo development server does not automatically create a Pagefind index. If you do not want search, remove `content/search.md`; the header will omit its search link.
+Without an index, the search page explains that search is unavailable; the rest of the site remains usable. The regular Hugo development server does not automatically create a Pagefind index. If you do not want search, remove `content/search.md` and `content/search.ja.md`; each language's header will omit its search link.
