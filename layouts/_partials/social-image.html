@@ -1,0 +1,23 @@
+{{- /* Page images may refer to an exact resource in the current page bundle.
+  Site-wide socialImage remains relative to the site, even when a bundle has a
+  file with the same name. Keep Hugo's published resource URL and any authored
+  query/fragment; treating a filename as a glob can select a different image. */ -}}
+{{- $reference := .Params.image | default .Site.Params.socialImage -}}
+{{- $result := "" -}}
+{{- with $reference -}}
+  {{- $result = partialCached "site-url.html" . . site.BaseURL | absURL -}}
+{{- end -}}
+{{- with .Params.image -}}
+  {{- $reference = string . -}}
+  {{- $hasScheme := gt (len (findRE `^[a-zA-Z][a-zA-Z0-9+.-]*:` $reference)) 0 -}}
+  {{- if and (not $hasScheme) (not (strings.HasPrefix $reference "/")) -}}
+    {{- $url := urls.Parse $reference -}}
+    {{- with $url.Path -}}
+      {{- with $.Resources.Get . -}}
+        {{- $suffix := replaceRE `^[^?#]*` "" $reference -}}
+        {{- $result = printf "%s%s" .Permalink $suffix -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

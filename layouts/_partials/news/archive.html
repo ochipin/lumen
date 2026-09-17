@@ -13,7 +13,7 @@
 {{- if not $total }}{{ $range = "0" }}{{ end -}}
 {{ partial "page-header.html" (dict "Page" $page) }}
 <div class="page-shell container news-index" lang="{{ $language }}">
-  {{ with $page.Content }}<div class="prose section-intro">{{ . }}</div>{{ end }}
+  {{ with $page.Content }}<div class="prose section-intro">{{ partial "blocks/heading-aliases.html" . }}</div>{{ end }}
   <section id="news-filter-controls" class="news-filters" aria-labelledby="news-filters-title" data-pagefind-ignore hidden>
     <h2 id="news-filters-title">{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_find_news") }}</h2>
     <form id="news-filters" role="search" aria-label="{{ partial "i18n.html" (dict "Page" $page "Key" "lumen_search_news") }}"

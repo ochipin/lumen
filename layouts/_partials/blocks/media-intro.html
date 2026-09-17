@@ -1,4 +1,4 @@
 <section class="explainer-section section-wash" aria-labelledby="{{ .ID }}-title"><div class="container explainer-grid">
-  <div class="explainer-copy">{{ with .Eyebrow }}<p class="eyebrow">{{ . }}</p>{{ end }}<h2 id="{{ .ID }}-title">{{ .Title }}</h2><div class="block-markdown">{{ .HTML }}</div>{{ partial "blocks/link.html" (dict "URL" .Link "Label" .LinkLabel) }}</div>
+  <div class="explainer-copy">{{ with .Eyebrow }}<p class="eyebrow">{{ . }}</p>{{ end }}<h2 id="{{ .ID }}-title">{{ .Title }}</h2><div class="block-markdown">{{ .HTML }}</div>{{ with .Link }}{{ partial "blocks/link.html" (dict "URL" . "Label" $.LinkLabel) }}{{ end }}</div>
   <figure><img src="{{ partialCached "site-url.html" .Image .Image site.BaseURL }}" alt="{{ .Alt }}" width="700" height="526" loading="lazy">{{ with .Caption }}<figcaption>{{ . }}</figcaption>{{ end }}</figure>
 </div></section>

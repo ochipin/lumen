@@ -7,5 +7,5 @@
   {{ with .Params.metrics }}
     {{ partial "blocks/metrics.html" (dict "Page" $ "Items" . "Label" $.Params.metricsLabel) }}
   {{ end }}
-  <div class="home-content">{{ .Content }}</div>
+  <div class="home-content">{{ partial "blocks/heading-aliases.html" .Content }}</div>
 {{ end }}

@@ -224,7 +224,9 @@
     try {
       const pagefind = await client();
       if (token !== generation) return;
-      const response = await timed(pagefind.search(value.normalize("NFKC")));
+      // Let Pagefind apply the same normalization as its index. Normalizing
+      // only the query can hide matching full-width text in the source pages.
+      const response = await timed(pagefind.search(value));
       if (token !== generation) return;
       if (!response || !Array.isArray(response.results)) throw new Error("Invalid search response");
       const session = { query: value, results: response.results, shown: 0 };

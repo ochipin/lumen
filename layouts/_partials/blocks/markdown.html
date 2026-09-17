@@ -20,7 +20,9 @@
   {{- $oldID := htmlUnescape (index . 2) -}}
   {{- $newID := printf "%s-%s" $id $oldID -}}
   {{- $anchors = merge $anchors (dict $oldID $newID) -}}
-  {{- $heading := printf "%s%s%s" (index . 1) (htmlEscape $newID) (index . 3) -}}
+  {{- /* Retain Hugo's original id for a stable bookmark when it is unique in
+    the complete page. Keep scoped ids for existing links and repeated titles. */ -}}
+  {{- $heading := printf `%s%s%s data-lumen-original-id="%s"` (index . 1) (htmlEscape $newID) (index . 3) (htmlEscape $oldID) -}}
   {{- $html = replace $html (index . 0) $heading -}}
 {{- end -}}
 {{- range $match := findRESubmatch `(<a\b[^>]*\shref=")(#[^"]+)(")` $html -}}

@@ -34,8 +34,8 @@
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ $pagination.URL }}">
 <meta property="og:site_name" content="{{ site.Title }}">
-{{ with .Params.image | default site.Params.socialImage }}
-  <meta property="og:image" content="{{ partialCached "site-url.html" . . site.BaseURL | absURL }}">
+{{ with partial "social-image.html" . }}
+  <meta property="og:image" content="{{ . }}">
 {{ end }}
 {{ if or (eq .Kind "404") (eq .Type "search") }}<meta name="robots" content="noindex">{{ end }}
 {{ hugo.Generator }}

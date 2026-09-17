@@ -13,7 +13,7 @@
       {{ with site.Params.logo }}
         <img class="brand-logo" src="{{ partialCached "site-url.html" . . site.BaseURL }}" alt="{{ site.Params.logoAlt | default $brand }}" width="72" height="42">
       {{ end }}
-      <span class="brand-text">{{ $brand }}{{ with site.Params.brandSubtitle }}<span class="brand-subtitle">{{ . }}</span>{{ end }}</span>
+      <span class="brand-text"><span class="brand-name" title="{{ $brand }}">{{ $brand }}</span>{{ with site.Params.brandSubtitle }}<span class="brand-subtitle">{{ . }}</span>{{ end }}</span>
     </a>
     {{ if $hasNavigation }}
     <nav class="site-nav" id="site-navigation" aria-label="{{ $navigationLabel }}">

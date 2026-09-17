@@ -1,6 +1,6 @@
 {{- /* Work on the final rendered body so Markdown, imported HTML and shortcode
   fragments share one TOC. Only missing/empty heading ids are changed. */ -}}
-{{- $content := string .HTML -}}
+{{- $content := string (partial "blocks/heading-aliases.html" .HTML) -}}
 {{- $entries := slice -}}
 {{- if findRE `(?i)<h[23]\b` $content 1 -}}
   {{- $attributes := `(?s)\s+([^\s"'=<>/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>]+)))?` -}}
